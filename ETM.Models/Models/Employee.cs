@@ -51,7 +51,7 @@ namespace ETM.Repository.Models
 		public int TechnologyId { get; set; }
 
 		[ForeignKey("TechnologyId")]
-		public virtual Technology Technology { get; set; }
+		public virtual SkillSet Technology { get; set; }
 		public string Remarks { get; set; }
 
 	}

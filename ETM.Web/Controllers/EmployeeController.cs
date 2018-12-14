@@ -32,6 +32,22 @@ namespace ETM.Web.Controllers
             }
         }
 
+		[Route("api/employee/get/{id}")]
+		public async Task<IHttpActionResult> GetById(int id)
+		{
+			try
+			{
+				var result = await _employeeService.GetById(id);
+				return this.JsonDataResult(result);
+			}
+			catch (Exception e)
+			{
+				//Logger.Log(LogLevel.Error, e);
+				return new InternalServerErrorResult(this);
+			}
+		}
+
+
 		/// <summary>
 		/// Returns id and name only
 		/// </summary>
@@ -124,5 +140,37 @@ namespace ETM.Web.Controllers
 				return new InternalServerErrorResult(this);
 			}
 		}
+
+		[Route("api/employee/getsummarybytechnology")]
+		public async Task<IHttpActionResult> GetSummaryByTechnology()
+		{
+			try
+			{
+				var result = await _employeeService.GetSummaryByTechnology();
+				return this.JsonDataResult(result);
+			}
+			catch (Exception e)
+			{
+				//Logger.Log(LogLevel.Error, e);
+				return new InternalServerErrorResult(this);
+			}
+		}
+
+		[Route("api/employee/getdetailbytechnology")]
+		public async Task<IHttpActionResult> GetDetailByTechnology()
+		{
+			try
+			{
+				var result = await _employeeService.GetDetailByTechnology();
+				return this.JsonDataResult(result);
+			}
+			catch (Exception e)
+			{
+				//Logger.Log(LogLevel.Error, e);
+				return new InternalServerErrorResult(this);
+			}
+		}
+
+		
 	}
 }

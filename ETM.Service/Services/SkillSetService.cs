@@ -11,14 +11,14 @@ namespace ETM.Service.Services
 {
 	public class SkillSetService : ISkillSetService
 	{
-		public async Task<Technology> AddSkill(Technology skill)
+		public async Task<SkillSet> AddSkill(SkillSet skill)
 		{
 			try
 			{
 				using (var _context = new DatabaseContext())
 				{
 					_context.SkillSet.Add(skill);
-					int x = await(_context.SaveChangesAsync());
+					int x = await (_context.SaveChangesAsync());
 				}
 				return skill;
 			}
@@ -28,14 +28,14 @@ namespace ETM.Service.Services
 			}
 		}
 
-		public async Task<Technology> Get(int skillId)
+		public async Task<SkillSet> Get(int skillId)
 		{
-			Technology technology = null;
+			SkillSet technology = null;
 			try
 			{
 				using (var _context = new DatabaseContext())
 				{
-					technology = await _context.SkillSet.Where(x => x.Id == skillId).FirstOrDefaultAsync<Technology>();
+					technology = await _context.SkillSet.Where(x => x.Id == skillId).FirstOrDefaultAsync<SkillSet>();
 				}
 				return technology;
 			}
@@ -45,14 +45,15 @@ namespace ETM.Service.Services
 			}
 		}
 
-		public async Task<List<Technology>> GetSkills()
+		public async Task<List<SkillSet>> GetSkills()
 		{
-			List<Technology> technology = null;
+			List<SkillSet> technology = null;
 			try
 			{
+				//Group by based on IsPrimary
 				using (var _context = new DatabaseContext())
 				{
-					technology = await _context.SkillSet.ToListAsync< Technology>();
+					technology = await _context.SkillSet.ToListAsync<SkillSet>();
 				}
 				return technology;
 			}

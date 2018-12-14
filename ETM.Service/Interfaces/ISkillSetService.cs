@@ -9,8 +9,8 @@ namespace ETM.Service.Interfaces
 {
 	public interface ISkillSetService
 	{
-		Task<List<Technology>> GetSkills();
-		Task<Technology> Get(int skillid);
-		Task<Technology> AddSkill(Technology skill);
+		Task<List<SkillSet>> GetSkills();
+		Task<SkillSet> Get(int skillid);
+		Task<SkillSet> AddSkill(SkillSet skill);
 	}
 }

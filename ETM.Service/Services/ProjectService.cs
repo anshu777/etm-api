@@ -26,10 +26,25 @@ namespace ETM.Service
 						ClientId = projectDto.clientId,
 						ProjectManagerId = projectDto.projectManagerId,
 						Name = projectDto.projectName,
-						StartDate = projectDto.startDate
+						StartDate = projectDto.startDate,
+						Comments = projectDto.comments
 					};
 					_context.Project.Add(project);
-					int x = await(_context.SaveChangesAsync());
+
+					int x = await (_context.SaveChangesAsync());
+
+					ProjectSkills projectSkills = new ProjectSkills()
+					{
+						ProjectId = project.Id,
+						PrimarySkillIds = string.Join(",", projectDto.primarySkillIds.Select(z => z.Id)),
+						SecondarySkillIds = string.Join(",", projectDto.secondarySkillIds.Select(z => z.Id))
+					};
+
+					// TODO ProjectResource resource = new ProjectResource()
+					_context.ProjectSkills.Add(projectSkills);
+
+					int y = await (_context.SaveChangesAsync());
+
 				}
 				return projectDto;
 			}
@@ -98,7 +113,6 @@ namespace ETM.Service
 									clientId =  p.ClientId,
 									clientName= p.Client.Name,
 									projectManager = p.Employee.Name,
-									officeAddress = "temp",
 									startDate = p.StartDate,
 								}).ToList();
 				}

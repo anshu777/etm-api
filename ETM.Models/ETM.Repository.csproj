@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dto\DesignationHeadCountReportDto.cs" />
     <Compile Include="Dto\EmployeeDto.cs" />
     <Compile Include="Dto\EmployeeTaskDto.cs" />
     <Compile Include="Dto\EmployeeTimesheet.cs" />
@@ -70,10 +71,15 @@
     <Compile Include="Models\Constants.cs" />
     <Compile Include="Models\Designation.cs" />
     <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\EmployeeAppraisal.cs" />
+    <Compile Include="Models\EmployeeStatus.cs" />
     <Compile Include="Models\EmployeeTeam.cs" />
     <Compile Include="Models\Project.cs" />
+    <Compile Include="Models\ProjectResource.cs" />
+    <Compile Include="Models\ProjectSkills.cs" />
     <Compile Include="Models\ProjectTeam.cs" />
     <Compile Include="Models\Roles.cs" />
+    <Compile Include="Models\Status.cs" />
     <Compile Include="Models\Technology.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

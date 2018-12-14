@@ -29,10 +29,10 @@ namespace ETM.Service
 		public DbSet<Timesheet> TimeSheet { get; set; }
 		public DbSet<Category> Category { get; set; }
 		public DbSet<Designation> Designation { get; set; }
-
-		public DbSet<Technology> SkillSet { get; set; }
-
+		public DbSet<SkillSet> SkillSet { get; set; }
 		public DbSet<UserModel> UserModel { get; set; }
+		public DbSet<ProjectSkills> ProjectSkills { get; set; }
+		public DbSet<ProjectResource> ProjectResource { get; set; }
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{

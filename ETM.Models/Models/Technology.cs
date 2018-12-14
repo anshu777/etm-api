@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace ETM.Repository.Models
 {
 	[Table("technology", Schema = "dbo")]
-	public class Technology
+	public class SkillSet
 	{
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		[Column("id", Order = 1), Key]
@@ -17,5 +17,8 @@ namespace ETM.Repository.Models
 
 		[Column("name"), Required]
 		public string Name { get; set; }
+
+		[Column("isprimary")]
+		public byte IsPrimary { get; set; }
 	}
 }

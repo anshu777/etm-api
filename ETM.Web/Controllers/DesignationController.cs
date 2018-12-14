@@ -29,5 +29,20 @@ namespace ETM.Web.Controllers
                 return new InternalServerErrorResult(this);
             }
         }
-    }
+
+		[Route("api/designation/getsummarybydesignation")]
+		public async Task<IHttpActionResult> GetSummaryByDesignation()
+		{
+			try
+			{
+				var result = await _designationService.GetSummaryByDesignation();
+				return this.JsonDataResult(result);
+			}
+			catch (Exception e)
+			{
+				//Logger.Log(LogLevel.Error, e);
+				return new InternalServerErrorResult(this);
+			}
+		}
+	}
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ETM.Repository.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,8 +15,10 @@ namespace ETM.Repository.Dto
 		public int projectManagerId { get; set; }
 		public string projectManager { get; set; }
 		public string clientName { get; set; }
-		public string officeAddress { get; set; }
+		public string comments { get; set; }
 		public DateTime startDate { get; set; }
 		public DateTime dueDate { get; set; }
+		public List<SkillSet> primarySkillIds { get; set; }
+		public List<SkillSet> secondarySkillIds { get; set; }
 	}
 }
