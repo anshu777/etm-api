@@ -36,6 +36,31 @@ namespace ETM.Service.Services
 			}
 		}
 
+		public async Task<TeamTasksDto> AssignTasks(TeamTasksDto teamTasks)
+		{
+			try
+			{
+				using (var _context = new DatabaseContext())
+				{
+					foreach (int taskId in teamTasks.TaskIds)
+					{
+						TaskTeam team = new TaskTeam()
+						{
+							TaskId = taskId,
+							TeamId = teamTasks.TeamId,
+						};
+						_context.TaskTeam.Add(team);
+						int x = await (_context.SaveChangesAsync());
+					}
+				}
+				return teamTasks;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+
 		public async Task<Team> Get(int TeamId)
 		{
 			Team team = null;

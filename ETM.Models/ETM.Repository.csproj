@@ -63,9 +63,11 @@
     <Compile Include="Dto\EmployeeTimesheet.cs" />
     <Compile Include="Dto\OrgChartDto.cs" />
     <Compile Include="Dto\ProjectDto.cs" />
+    <Compile Include="Dto\TeamTasksDto.cs" />
     <Compile Include="Dto\TeamDto.cs" />
     <Compile Include="Dto\TimesheetColumn.cs" />
     <Compile Include="Dto\TimesheetRow.cs" />
+    <Compile Include="Dto\UserDateDto.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\Constants.cs" />

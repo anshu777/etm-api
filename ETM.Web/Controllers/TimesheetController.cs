@@ -4,11 +4,12 @@ using ETM.Web.Common;
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.Results;
 
 namespace ETM.Web.Controllers
 {
-	
+	[EnableCors(origins: "*", headers: "*", methods: "*")]
 	public class TimesheetController : ApiController
 	{
 		private ITimesheetService _timesheetService;
@@ -22,13 +23,13 @@ namespace ETM.Web.Controllers
 
 		//}
 
-		[HttpGet]
-		[Route("api/timesheet/getbyuserid/{id}")]
-		public async Task<IHttpActionResult> GetByUserId(long id)
+		[HttpPost]
+		[Route("api/timesheet/getbyuserid")]
+		public async Task<IHttpActionResult> GetByUserId([FromBody] UserDateDto userDate)
 		{
 			try
 			{
-				var result = await _timesheetService.GetTimesheetByUserID(id);
+				var result = await _timesheetService.GetTimesheetByUserID(userDate);
 				return this.JsonDataResult(result);
 			}
 			catch (Exception e)

@@ -13,5 +13,7 @@ namespace ETM.Service.Interfaces
 		Task<List<EmployeeTaskDto>> GetTasks();
 		Task<EmployeeTaskDto> Get(int taskId);
 		Task<EmployeeTaskDto> AddTask(EmployeeTaskDto Task);
+		Task Delete(int taskId);
+		Task<List<EmployeeTaskDto>> GetByTeamId(int teamId);
 	}
 }

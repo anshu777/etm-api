@@ -12,7 +12,7 @@ namespace ETM.Service.Interface
     {
         Task<EmployeeTimesheet> AddTimeSheet(EmployeeTimesheet esheet);
 		//IQueryable<TimeSheetMasterView> ShowTimeSheet(string sortColumn, string sortColumnDir, string Search, int UserID);
-		Task<EmployeeTimesheet> GetTimesheetByUserID(long UserID);
+		Task<EmployeeTimesheet> GetTimesheetByUserID(UserDateDto userDate);
         int DeleteTimesheetByID(long TimesheetID, long UserID);
         bool UpdateTimesheet();
     }

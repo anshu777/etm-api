@@ -8,10 +8,10 @@ namespace ETM.Repository.Dto
 {
 	public class TimesheetColumn
 	{
-		public int Id { get; set; }
-		public int EmployeeId { get; set; }
-		public int TaskId { get; set; }
-		public DateTime Date { get; set; }
-		public Decimal Hours { get; set; }
+		public int id { get; set; }
+		public int employeeId { get; set; }
+		public int taskId { get; set; }
+		public DateTime date { get; set; }
+		public Decimal hours { get; set; }
 	}
 }

@@ -25,7 +25,7 @@ namespace ETM.Service.Services
 						TaskType = taskDto.taskType,
 					};
 					_context.EmployeeTask.Add(task);
-					int x = await(_context.SaveChangesAsync());
+					int x = await (_context.SaveChangesAsync());
 				}
 				return taskDto;
 			}
@@ -79,6 +79,53 @@ namespace ETM.Service.Services
 							 }).ToList();
 				}
 				return tasks;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+
+		public async Task<List<EmployeeTaskDto>> GetByTeamId(int teamId)
+		{
+			List<EmployeeTaskDto> taskDto = null;
+			try
+			{
+				using (var _context = new DatabaseContext())
+				{
+					var tasks = await _context.TaskTeam.Include(x => x.Task).Where(x => x.TeamId == teamId).ToListAsync<TaskTeam>();
+					if(tasks.Count > 0)
+					{
+						taskDto = new List<EmployeeTaskDto>();
+						foreach (TaskTeam task in tasks)
+						{
+							taskDto.Add(new EmployeeTaskDto
+							{
+								id = task.TaskId,
+								name = task.Task.Name,
+							});
+						}
+					}
+				}
+				return taskDto;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+
+		public async Task Delete(int taskId)
+		{
+			try
+			{
+				using (var _context = new DatabaseContext())
+				{
+					EmployeeTask task = await _context.EmployeeTask.Where(x => x.Id == taskId).FirstOrDefaultAsync<EmployeeTask>();
+					if (task != null)
+						_context.EmployeeTask.Remove(task);
+					int y = await (_context.SaveChangesAsync());
+				}
 			}
 			catch (Exception)
 			{

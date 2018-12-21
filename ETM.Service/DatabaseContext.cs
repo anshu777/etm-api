@@ -33,6 +33,7 @@ namespace ETM.Service
 		public DbSet<UserModel> UserModel { get; set; }
 		public DbSet<ProjectSkills> ProjectSkills { get; set; }
 		public DbSet<ProjectResource> ProjectResource { get; set; }
+		public DbSet<TaskTeam> TaskTeam { get; set; }
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
