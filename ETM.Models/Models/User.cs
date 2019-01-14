@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ETM.Repository.Models
 {
+	[Table("user", Schema = "dbo")]
 	public class UserModel 
 	{
 		public int Id { get; set; }
@@ -17,6 +19,6 @@ namespace ETM.Repository.Models
 		public string LastName { get; set; }
 		public string LoggedOn { get; set; }
 		public string[] Roles { get; set; }
-
+		//public virtual ICollection<Roles> Roles { get; set; }
 	}
 }

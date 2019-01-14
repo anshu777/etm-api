@@ -8,7 +8,9 @@ namespace ETM.Repository.Dto
 {
 	public class UserDateDto
 	{
-		public int UserId { get; set; }
+		public int UserId { get; set; } //Approver
 		public DateTime Date { get; set; }
+		public int TeamId { get; set; }
+		public int EmployeeId { get; set; }
 	}
 }

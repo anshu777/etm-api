@@ -28,5 +28,14 @@ namespace ETM.Repository.Models
 
         [Column("hour"), Required]
         public decimal Hour { get; set; }
-    }
+
+		[Column("approved")]
+		public bool Approved { get; set; }
+
+		[Column("approved_by")]
+		public int ApprovedBy { get; set; }
+
+		[Column("approved_date")]
+		public DateTime ApprovedDate { get; set; }
+	}
 }

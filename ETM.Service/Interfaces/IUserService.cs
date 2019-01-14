@@ -13,7 +13,8 @@ namespace ETM.Service.Interfaces
 	{
 		UserModel GetUserClaims(IEnumerable<Claim> claims);
 		IdentityResult Register(UserModel user);
-		List<Roles> GetRoles();
+		Task<List<string>> GetRolesById(int userId);
+		//Task<List<Roles>> GetRoles();
 		Task<UserModel> Login(string username, string password);
 	}
 }

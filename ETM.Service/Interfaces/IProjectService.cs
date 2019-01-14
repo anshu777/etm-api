@@ -20,5 +20,6 @@ namespace ETM.Service.Interface
 		bool CheckProjectIDExistsInTimesheet(int projectID);
         int DeleteProject(int projectID);
         int GetTotalProjectsCounts();
-    }
+		Task<ProjectDto> UpdateProject(ProjectDto project);
+	}
 }

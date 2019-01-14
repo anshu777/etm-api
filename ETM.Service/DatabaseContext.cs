@@ -34,6 +34,14 @@ namespace ETM.Service
 		public DbSet<ProjectSkills> ProjectSkills { get; set; }
 		public DbSet<ProjectResource> ProjectResource { get; set; }
 		public DbSet<TaskTeam> TaskTeam { get; set; }
+		public DbSet<Roles> Roles { get; set;  }
+		public DbSet<UserRoles> UserRoles { get; set; }
+		public DbSet<Status> Status { get; set; }
+		public DbSet<StatusType> StatusType { get; set; }
+		public DbSet<ExitClearance> ExitClearances { get; set; }
+		public DbSet<EmployeeTechnology> EmployeeTechnology { get; set; }
+        public DbSet<MRF> MRF { get; set; }
+        public DbSet<MRFSkills> MRFSkills { get; set; }
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{

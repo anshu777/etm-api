@@ -4,12 +4,14 @@ using ETM.Web.Common;
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.Results;
 
 namespace ETM.Web.Controllers
 {
-	//
-	public class EmployeeController : ApiController
+    //
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    public class EmployeeController : ApiController
     {
         private IEmployeeService _employeeService;
 
@@ -23,6 +25,22 @@ namespace ETM.Web.Controllers
             try
             {
                 var result = await _employeeService.GetAllEmployee();
+                return this.JsonDataResult(result);
+            }
+            catch (Exception e)
+            {
+                //Logger.Log(LogLevel.Error, e);
+                return new InternalServerErrorResult(this);
+            }
+        }
+		
+		[HttpGet]
+		[Route("api/employee/getByDesignationId/{id}")]
+        public async Task<IHttpActionResult> GetByDesignationId(int id)
+        {
+            try
+            {
+                var result = await _employeeService.GetByDesignationId(id);
                 return this.JsonDataResult(result);
             }
             catch (Exception e)

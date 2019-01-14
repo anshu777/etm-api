@@ -68,5 +68,23 @@ namespace ETM.Web.Controllers
 				return new InternalServerErrorResult(this);
 			}
 		}
-	}
+
+        [HttpPut]
+       // [Route("api/project/put")]
+        public async Task<IHttpActionResult> Put([FromBody]ProjectDto project)
+        {
+            try
+            {
+                var result = await _projectService.UpdateProject(project);
+                return this.JsonDataResult(result);
+            }
+            catch (Exception e)
+            {
+                //Logger.Log(LogLevel.Error, e);
+                Console.WriteLine(e);
+                return new InternalServerErrorResult(this);
+            }
+        }
+
+    }
 }

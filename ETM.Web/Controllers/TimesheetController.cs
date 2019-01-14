@@ -40,12 +40,44 @@ namespace ETM.Web.Controllers
 		}
 
 		[HttpPost]
-		//[Route("api/timesheet/addtimesheet/")]
+		[Route("api/timesheet/save/")]
 		public async Task<IHttpActionResult> PostTimesheet([FromBody]EmployeeTimesheet esheet)
 		{
 			try
 			{
 				var result = await _timesheetService.AddTimeSheet(esheet);
+				return this.JsonDataResult(result);
+			}
+			catch (Exception e)
+			{
+				//Logger.Log(LogLevel.Error, e);
+				return new InternalServerErrorResult(this);
+			}
+		}
+
+		[HttpPost]
+		[Route("api/timesheet/approve/")]
+		public async Task<IHttpActionResult> PostApprove([FromBody]UserDateDto userDate)
+		{
+			try
+			{
+				var result = await _timesheetService.Approve(userDate);
+				return this.JsonDataResult(result);
+			}
+			catch (Exception e)
+			{
+				//Logger.Log(LogLevel.Error, e);
+				return new InternalServerErrorResult(this);
+			}
+		}
+
+		[HttpPost]
+		[Route("api/timesheet/unlock/")]
+		public async Task<IHttpActionResult> PostUnlock([FromBody]UserDateDto userDate)
+		{
+			try
+			{
+				var result = await _timesheetService.Unlock(userDate);
 				return this.JsonDataResult(result);
 			}
 			catch (Exception e)

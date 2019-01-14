@@ -45,9 +45,9 @@ namespace ETM.Service.Services
 			return result;
 		}
 
-		public List<Roles> GetRoles()
+		public async Task<List<string>> GetRolesById(int userId)
 		{
-			List<Roles> roles = null;
+			List<string> roles = null;
 			using (var _context = new DatabaseContext())
 			{
 				//var roleStore = new RoleStore<IdentityRole>(_context);

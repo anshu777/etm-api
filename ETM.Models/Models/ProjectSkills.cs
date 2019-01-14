@@ -11,7 +11,8 @@ namespace ETM.Repository.Models
 	[Table("project_skills", Schema = "dbo")]
 	public class ProjectSkills
 	{
-		[Column("project_id"), Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Column("project_id"), Key]
 		public int ProjectId { get; set;}
 		[Column("primary_skill_ids")]
 		public string PrimarySkillIds { get; set; }

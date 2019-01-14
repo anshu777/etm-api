@@ -17,44 +17,91 @@ namespace ETM.Service
 
 		public async Task<ProjectDto> AddProject(ProjectDto projectDto)
 		{
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
-					Project project = new Project()
-					{
-						ClientId = projectDto.clientId,
-						ProjectManagerId = projectDto.projectManagerId,
-						Name = projectDto.projectName,
-						StartDate = projectDto.startDate,
-						Comments = projectDto.comments
-					};
-					_context.Project.Add(project);
+            using (var _context = new DatabaseContext())
+            {
+                using (DbContextTransaction trx = _context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        Project project = new Project()
+                        {
+                            ClientId = projectDto.clientId,
+                            ProjectManagerId = projectDto.projectManagerId,
+                            Name = projectDto.projectName,
+                            StartDate = projectDto.startDate,
+                            Comments = projectDto.comments
+                        };
+                        _context.Project.Add(project);
 
-					int x = await (_context.SaveChangesAsync());
+                        int x = (_context.SaveChanges());
+                        Console.WriteLine("x=" + x);
+                      
+                       
+                            ProjectSkills projectSkills = new ProjectSkills();
+                            {
+                                projectSkills.ProjectId = project.Id;
+                                projectSkills.PrimarySkillIds = string.Join(",", projectDto.primarySkillIds.Select(z => z.Id));
+                                projectSkills.SecondarySkillIds = string.Join(",", projectDto.secondarySkillIds.Select(z => z.Id));
+                            };
 
-					ProjectSkills projectSkills = new ProjectSkills()
-					{
-						ProjectId = project.Id,
-						PrimarySkillIds = string.Join(",", projectDto.primarySkillIds.Select(z => z.Id)),
-						SecondarySkillIds = string.Join(",", projectDto.secondarySkillIds.Select(z => z.Id))
-					};
+                            // TODO ProjectResource resource = new ProjectResource()
+                            _context.ProjectSkills.Add(projectSkills);
 
-					// TODO ProjectResource resource = new ProjectResource()
-					_context.ProjectSkills.Add(projectSkills);
-
-					int y = await (_context.SaveChangesAsync());
-
-				}
-				return projectDto;
-			}
-			catch (Exception)
-			{
-				throw;
-			}
+                            int y = (_context.SaveChanges());
+                        
+                      
+                        trx.Commit();
+                        return projectDto;
+                    }
+                    catch (Exception)
+                    {
+                        trx.Rollback();
+                        throw;
+                    }
+                }
+            }
 		}
 
-		public bool CheckProjectIDExistsInTimesheet(int projectID)
+        public async Task<ProjectDto> UpdateProject(ProjectDto projectDto)
+        {
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    Project project = await _context.Project.Where(x => x.Id == projectDto.id).FirstOrDefaultAsync<Project>();
+                    {
+                        project.ClientId = projectDto.clientId;
+                        project.ProjectManagerId = projectDto.projectManagerId;
+                        project.Name = projectDto.projectName;
+                        project.StartDate = projectDto.startDate;
+                        project.Comments = projectDto.comments;
+                    };
+
+                    int x1 = await (_context.SaveChangesAsync());
+                    Console.WriteLine("x=" + x1);
+                    ProjectSkills projectSkills = await _context.ProjectSkills.Where(x => x.ProjectId == projectDto.id).FirstOrDefaultAsync<ProjectSkills>();
+                    if (projectSkills == null) projectSkills = new ProjectSkills();
+                    {
+                        projectSkills.ProjectId = project.Id;
+                        projectSkills.PrimarySkillIds = string.Join(",", projectDto.primarySkillIds.Select(z => z.Id));
+                        projectSkills.SecondarySkillIds = string.Join(",", projectDto.secondarySkillIds.Select(z => z.Id));
+                    };
+
+                    // TODO ProjectResource resource = new ProjectResource()
+                    _context.ProjectSkills.Add(projectSkills);
+
+                    int y = await (_context.SaveChangesAsync());
+
+                }
+                return projectDto;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public bool CheckProjectIDExistsInTimesheet(int projectID)
 		{
 			throw new NotImplementedException();
 		}
@@ -112,8 +159,10 @@ namespace ETM.Service
 									projectName = p.Name,
 									clientId =  p.ClientId,
 									clientName= p.Client.Name,
-									projectManager = p.Employee.Name,
+                                    projectManagerId = p.ProjectManagerId,
+                                    projectManager = p.Employee.Name,
 									startDate = p.StartDate,
+                                    comments = p.Comments
 								}).ToList();
 				}
 				return projects;
@@ -128,5 +177,7 @@ namespace ETM.Service
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+       
+    }
 }

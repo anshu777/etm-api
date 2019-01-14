@@ -11,6 +11,9 @@ namespace ETM.Repository.Models
         [Column("employee_id", Order = 1), Key]
         public int Id { get; set; }
 
+        [Column("BSIPL_id")]
+        public int BSIPLid { get; set; }
+
         [Column("employee_name"), Required]
         public string Name { get; set; }
 
@@ -47,12 +50,56 @@ namespace ETM.Repository.Models
 		[Column("experience_before_joining")]
 		public int ExperienceBeforeJoining { get; set; }
 
-		[Column("technology_id"), Required]
+		[Column("technology_id")]
 		public int TechnologyId { get; set; }
 
 		[ForeignKey("TechnologyId")]
 		public virtual SkillSet Technology { get; set; }
+
+        [Column("remarks")]
 		public string Remarks { get; set; }
 
-	}
+        [Column("aadhar_no")]
+        public string Aadhar { get; set; }
+
+        [Column("pancard")]
+        public string PAN { get; set; }
+
+        [Column("bank_acc_at_joining")]
+        public string BankAccAtJoining { get; set; }
+
+        [Column("salary_acc")]
+        public string SalaryAcc { get; set; }
+
+        [Column("pf_uan")]
+        public string UAN { get; set; }
+
+        [Column("contact_no")]
+        public string ContactNo { get; set; }
+
+        [Column("alt_contact_no")]
+        public string AltContactNo { get; set; }
+
+        [Column("reporting_mgr")]
+        public int ReportingMgr { get; set; }
+
+        [Column("resignation_date")]
+        public DateTime ResignationDate { get; set; }
+
+        [Column("relieving_date")]
+        public DateTime RelievingDate { get; set; }
+
+        [Column("email")]
+        public string Email { get; set; }
+
+        [Column("alt_email")]
+        public string AltEmail { get; set; }
+
+        [Column("permanent_addr")]
+        public string PermanentAddr { get; set; }
+
+        [Column("correspondence_addr")]
+        public string CorrespondenceAddr { get; set; }
+
+    }
 }

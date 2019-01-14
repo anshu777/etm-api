@@ -16,6 +16,7 @@ namespace ETM.Service.Interfaces
 		Task<List<EmployeeDto>> GetAllByClients();
 		Task<List<TechnologySummaryDto>> GetSummaryByTechnology();
 		Task<List<EmployeeDto>> GetDetailByTechnology();
+		Task<List<OptionDto>> GetByDesignationId(int id);
 
 	}
 }

@@ -106,7 +106,24 @@ namespace ETM.Service.Services
 									JoiningCtc = e.JoiningCtc,
 									ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
 									StatusName = e.Status == 1 ? "Confirmed" : "Probation", //get more status 
-									TeamName = e.Team.Name
+                                    TeamId = e.TeamId,
+                                    TeamName = e.Team.Name,
+                                    ExperienceBeforeJoining = e.ExperienceBeforeJoining,
+                                    Remarks = e.Remarks,
+                                    Aadhar = e.Aadhar,
+                                    PAN = e.PAN,
+                                    UAN = e.UAN,
+                                    BankAccAtJoining = e.BankAccAtJoining,
+                                    SalaryAcc = e.SalaryAcc,
+                                    ContactNo = e.ContactNo,
+                                    AltContactNo = e.AltContactNo,
+                                    ReportingMgr = e.ReportingMgr,
+                                    ResignationDate = e.ResignationDate,
+                                    RelievingDate = e.RelievingDate,
+                                    PermanentAddr = e.PermanentAddr,
+                                    CorrespondenceAddr = e.CorrespondenceAddr,
+                                    Email = e.Email,
+                                    AltEmail = e.AltEmail
 								}).FirstOrDefault();
 				}
 				return employee;
@@ -120,16 +137,32 @@ namespace ETM.Service.Services
 
 
 
-		private Employee mapDtoToEmployeeEntity(EmployeeDto employee)
+        private Employee mapDtoToEmployeeEntity(EmployeeDto employee)
 		{
-			return new Employee()
-			{
-				Name = employee.Name,
-				DesignationId = employee.DesignationId,
-				DateOfJoin = employee.DateOfJoin,
-				CategoryId = employee.CategoryId,
-				JoiningCtc = employee.JoiningCtc,
-				Status = employee.Status
+            //int tech[]
+            return new Employee()
+            {
+                BSIPLid = employee.BSIPLid,
+                Name = employee.Name,
+                DesignationId = employee.DesignationId,
+                DateOfJoin = employee.DateOfJoin,
+                CategoryId = employee.CategoryId,
+                JoiningCtc = employee.JoiningCtc,
+                Status = employee.Status,
+                TeamId = employee.TeamId,
+                ExperienceBeforeJoining = employee.ExperienceBeforeJoining,
+                Remarks = employee.Remarks,
+                Aadhar = employee.Aadhar,
+                PAN = employee.PAN,
+                BankAccAtJoining = employee.BankAccAtJoining,
+                SalaryAcc = employee.SalaryAcc,
+                UAN = employee.UAN,
+                ContactNo = employee.ContactNo,
+                AltContactNo = employee.AltContactNo,
+                Email = employee.Email,
+                AltEmail = employee.AltEmail,
+                PermanentAddr = employee.PermanentAddr,
+                CorrespondenceAddr = employee.CorrespondenceAddr
 			};
 		}
 		private List<EmployeeDto> mapEmployeeEntityToDto(List<Employee> employees)
@@ -293,6 +326,7 @@ namespace ETM.Service.Services
 										StatusName = e.employee.Status == 1 ? "Confirmed" : "Probation", //get more status 
 										TeamName = e.employee.Team.Name,
 										ProjectName = e.employee.Team.Project.Name,
+                                        ProjectComment = e.employee.Team.Project.Comments,
 										TotalExperience = e.employee.ExperienceBeforeJoining + Convert.ToDateTime(e.employee.DateOfJoin).Year,
 										TechnologyName = e.employee.Technology.Name,
 										Remarks = e.employee.Remarks
@@ -400,6 +434,28 @@ namespace ETM.Service.Services
 			}
 		}
 
-		
+		public async Task<List<OptionDto>> GetByDesignationId(int designationId)
+		{
+			List<OptionDto> empList = null;
+			try
+			{
+				using (var _context = new DatabaseContext())
+				{
+					var emps = await _context.Employee.Where(x => x.DesignationId == designationId).ToListAsync<Employee>();
+					empList = (from e in emps
+							   select new OptionDto()
+							   {
+								   Id = e.Id,
+								   Name = e.Name
+							   }).ToList();
+				}
+				return empList;
+
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 	}
 }

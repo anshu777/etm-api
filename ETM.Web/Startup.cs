@@ -5,7 +5,9 @@ using ETM.Service.Interface;
 using ETM.Service.Interfaces;
 using ETM.Service.Services;
 using Microsoft.Owin;
+using Microsoft.Owin.Security.OAuth;
 using Owin;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -29,6 +31,8 @@ namespace ETM.Web
 			if (!string.IsNullOrEmpty(corsOrigins))
 			{
 				var cors = new EnableCorsAttribute(corsOrigins, " * ", "*");
+				//var cors = new EnableCorsAttribute(corsOrigins, "accept,accesstoken,authorization,cache-control,pragma,content-type,origin", "GET,PUT,POST,DELETE,TRACE,HEAD,OPTIONS");
+
 				config.EnableCors(cors);
 			}
 
@@ -42,16 +46,17 @@ namespace ETM.Web
 			);
 
 			//config.Filters.Add(new AuthorizeAttribute());
-
-			//OAuthAuthorizationServerOptions option = new OAuthAuthorizationServerOptions
-			//{
-			//	TokenEndpointPath = new PathString("/token"),
-			//	Provider = new ApplicationOAuthProvider(),
-			//	AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(60),
-			//	AllowInsecureHttp = true
-			//};
-			//app.UseOAuthAuthorizationServer(option);
-			//app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
+			
+			OAuthAuthorizationServerOptions option = new OAuthAuthorizationServerOptions
+			{
+				TokenEndpointPath = new PathString("/token"),
+				Provider = new ApplicationOAuthProvider(),
+				AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(60),
+				AllowInsecureHttp = true
+				//,AuthorizeEndpointPath =	new PathString("/api/Account/ExternalLogin"),
+			};
+			app.UseOAuthAuthorizationServer(option);
+			app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
 
 			//builder.RegisterType<Mapper>()
 			//	.As<IMapper>();
@@ -122,10 +127,15 @@ namespace ETM.Web
 			builder.RegisterType<SkillSetService>()
 				   .As<ISkillSetService>()
 				   .InstancePerRequest();
-			//builder.RegisterType<UserService>()
-			//	   .As<IUserService>()
-			//	   .InstancePerRequest();
-
+			builder.RegisterType<DashboardService>()
+				   .As<IDashboardService>()
+				   .InstancePerRequest();
+			builder.RegisterType<StatusService>()
+				   .As<IStatusService>()
+				   .InstancePerRequest();
+ 			builder.RegisterType<MRFService>()
+                    .As<IMRFService>()
+                    .InstancePerRequest();
 
 			ConfigureJsonSerialization(config);
 

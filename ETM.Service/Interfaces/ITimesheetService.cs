@@ -15,5 +15,7 @@ namespace ETM.Service.Interface
 		Task<EmployeeTimesheet> GetTimesheetByUserID(UserDateDto userDate);
         int DeleteTimesheetByID(long TimesheetID, long UserID);
         bool UpdateTimesheet();
-    }
+		Task<UserDateDto> Approve(UserDateDto userDate);
+		Task<UserDateDto> Unlock(UserDateDto userDate);
+	}
 }

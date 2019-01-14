@@ -54,8 +54,8 @@ namespace ETM.Web.Controllers
 		[AllowAnonymous]
 		public HttpResponseMessage GetRoles()
 		{
-			List<Roles> roles = _userService.GetRoles();
-			return this.Request.CreateResponse(HttpStatusCode.OK, roles);
+			//List<Roles> roles = _userService.GetRoles();
+			return this.Request.CreateResponse(HttpStatusCode.OK);//, roles);
 		}
 
 		[HttpPost]
@@ -63,28 +63,8 @@ namespace ETM.Web.Controllers
 		[AllowAnonymous]
 		public async Task<HttpResponseMessage> Login(UserModel model)
 		{
-			var request = HttpContext.Current.Request;
-			var tokenServiceUrl = request.Url.GetLeftPart(UriPartial.Authority) + request.ApplicationPath + "/api/Token";
-			using (var client = new HttpClient())
-			{
-				var requestParams = new List<KeyValuePair<string, string>>
-			{
-				new KeyValuePair<string, string>("grant_type", "password"),
-				new KeyValuePair<string, string>("username", model.UserName),
-				new KeyValuePair<string, string>("password", model.Password)
-			};
-				var requestParamsFormUrlEncoded = new FormUrlEncodedContent(requestParams);
-				var tokenServiceResponse = await client.PostAsync(tokenServiceUrl, requestParamsFormUrlEncoded);
-				var responseString = await tokenServiceResponse.Content.ReadAsStringAsync();
-				var responseCode = tokenServiceResponse.StatusCode;
-				var responseMsg = new HttpResponseMessage(responseCode)
-				{
-					Content = new StringContent(responseString, Encoding.UTF8, "application/json")
-				};
-				return responseMsg;
-			}
-
-			//return await _userService.Login(username, password);
+			 await _userService.Login(model.UserName, model.Password);
+			return null;
 		}
 	}
 }
