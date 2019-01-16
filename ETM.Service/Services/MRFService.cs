@@ -52,6 +52,9 @@ namespace ETM.Service.Services
             mrf.IsApproved = mrfdto.IsApproved;
             mrf.Date = mrfdto.Date;
             mrf.NoOfEmployess = mrfdto.NoOfEmployess;
+            mrf.NewRequest = mrfdto.NewRequest;
+            mrf.YearsOfExp = mrfdto.YearsOfExp;
+            mrf.Location = mrfdto.Location;
             return mrf;
         }
     }

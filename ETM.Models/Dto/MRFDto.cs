@@ -29,5 +29,11 @@ namespace ETM.Repository.Dto
         public DateTime Date { get; set; }
 
         public List<int> skillsId { get; set; }
+
+        public Boolean NewRequest { get; set; }
+        
+        public int YearsOfExp { get; set; }
+        
+        public String Location { get; set; }
     }
 }
