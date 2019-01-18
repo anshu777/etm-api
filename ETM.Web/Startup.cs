@@ -136,6 +136,9 @@ namespace ETM.Web
  			builder.RegisterType<MRFService>()
                     .As<IMRFService>()
                     .InstancePerRequest();
+            builder.RegisterType<OrgChartService>()
+                    .As<IOrgChartService>()
+                    .InstancePerRequest();
 
 			ConfigureJsonSerialization(config);
 
