@@ -8,14 +8,15 @@ using System.Data.SqlClient;
 using System.Data.Entity;
 using ETM.Repository.Models;
 using ETM.Repository.Dto;
+using ETM.Service.Services;
 
 namespace ETM.Service
 {
 	public class ProjectService : IProjectService
 	{
 		public ProjectService() { }
-
-		public async Task<ProjectDto> AddProject(ProjectDto projectDto)
+        SkillSetService skillSetService = new SkillSetService();
+        public async Task<ProjectDto> AddProject(ProjectDto projectDto)
 		{
             using (var _context = new DatabaseContext())
             {
@@ -127,16 +128,36 @@ namespace ETM.Service
 		}
 
 	
-		public async Task<Project> Get(int projectID)
+		public async Task<ProjectDto> Get(int projectID)
 		{
-			Project project = null;
-			try
+			ProjectDto projectDto = null;
+            Project project = null;
+            try
 			{
 				using (var _context = new DatabaseContext())
 				{
 					project = await _context.Project.Where(x => x.Id == projectID).FirstOrDefaultAsync<Project>();
-				}
-				return project;
+                    projectDto = mapProjectToProjectDto(project);
+                    projectDto.primarySkillIds = new List<SkillSet>();
+                    projectDto.secondarySkillIds = new List<SkillSet>();
+                    ProjectSkills projectSkills = new ProjectSkills();
+                    projectSkills = await _context.ProjectSkills.Where(x => x.ProjectId == projectID).FirstOrDefaultAsync<ProjectSkills>();
+                    String[] primary = projectSkills.PrimarySkillIds.Split(',');
+                    String[] secondary = projectSkills.SecondarySkillIds.Split(',');
+
+                    foreach(String id in primary)
+                    {
+                        SkillSet skill =await skillSetService.Get(Int32.Parse(id));
+                        projectDto.primarySkillIds.Add(skill);
+                    }
+                    foreach (String id in secondary)
+                    {
+                        SkillSet skill = await skillSetService.Get(Int32.Parse(id));
+                        projectDto.secondarySkillIds.Add(skill);
+                    }
+
+                }
+				return projectDto;
 			}
 			catch (Exception)
 			{
@@ -144,7 +165,21 @@ namespace ETM.Service
 			}
 		}
 
-		public async Task<List<ProjectDto>> GetProjects()
+        private ProjectDto mapProjectToProjectDto(Project p)
+        {
+            ProjectDto pd = new ProjectDto();
+            pd.id = p.Id;
+            pd.projectName = p.Name;
+            pd.startDate = p.StartDate;
+            pd.projectManagerId = p.ProjectManagerId;
+            pd.clientId = p.ClientId;
+            pd.comments = p.Comments;
+
+            return pd;
+        }
+
+
+        public async Task<List<ProjectDto>> GetProjects()
 		{
 			List<ProjectDto> projects = null;
 			try
@@ -164,7 +199,31 @@ namespace ETM.Service
 									startDate = p.StartDate,
                                     comments = p.Comments
 								}).ToList();
-				}
+
+                    ProjectSkills projectSkills = new ProjectSkills();
+                    foreach (ProjectDto pd in projects)
+                    {
+                        pd.primarySkillIds = new List<SkillSet>();
+                        pd.secondarySkillIds = new List<SkillSet>();
+                        projectSkills = await _context.ProjectSkills.Where(x => x.ProjectId == pd.id).FirstOrDefaultAsync<ProjectSkills>();
+                        if (projectSkills != null)
+                        {
+                            String[] primary = projectSkills.PrimarySkillIds.Split(',');
+                            String[] secondary = projectSkills.SecondarySkillIds.Split(',');
+ 
+                            foreach (String id in primary)
+                            {
+                                SkillSet skill = await skillSetService.Get(Int32.Parse(id));
+                                pd.primarySkillIds.Add(skill);
+                            }
+                            foreach (String id in secondary)
+                            {
+                                SkillSet skill = await skillSetService.Get(Int32.Parse(id));
+                                pd.secondarySkillIds.Add(skill);
+                            }
+                        }
+                    }
+                }
 				return projects;
 			}
 			catch (Exception)
