@@ -1,4 +1,5 @@
 ﻿using ETM.Repository.Dto;
+using ETM.Repository.Models;
 using ETM.Service.Interface;
 using ETM.Web.Common;
 using System;
@@ -86,5 +87,39 @@ namespace ETM.Web.Controllers
 				return new InternalServerErrorResult(this);
 			}
 		}
-	}
+
+        
+        [HttpPost]
+        [Route("api/timesheet/request")]
+        public async Task<IHttpActionResult> PostRequest(TimesheetRequestDTO request)
+        {
+            try
+            {
+                var result = await _timesheetService.AddRequest(request);
+                return this.JsonDataResult(result);
+            }
+            catch (Exception e)
+            {
+                //Logger.Log(LogLevel.Error, e);
+                return new InternalServerErrorResult(this);
+            }
+        }
+
+        
+        [Route("api/timesheet/requests")]
+        public async Task<IHttpActionResult> GetRequests()
+        {
+            try
+            {
+                var result = await _timesheetService.GetRequests();
+                return this.JsonDataResult(result);
+            }
+            catch (Exception e)
+            {
+                //Logger.Log(LogLevel.Error, e);
+                return new InternalServerErrorResult(this);
+            }
+        }
+
+    }
 }

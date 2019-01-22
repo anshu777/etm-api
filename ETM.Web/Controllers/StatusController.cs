@@ -61,6 +61,21 @@ namespace ETM.Web.Controllers
             }
         }
 
+        [Route("api/status/getbyStatusTypeId/{id}")]
+        public async Task<IHttpActionResult> GetStatusByType(int id)
+        {
+            try
+            {
+                var result = await _statusService.GetByStatusId(id);
+                return this.JsonDataResult(result);
+            }
+            catch (Exception e)
+            {
+                //Logger.Log(LogLevel.Error, e);
+                return new InternalServerErrorResult(this);
+            }
+        }
+
         // GET: api/Status
         public IQueryable<Status> GetStatus()
         {

@@ -1,4 +1,5 @@
-﻿using ETM.Service.Interfaces;
+﻿using ETM.Repository.Models;
+using ETM.Service.Interfaces;
 using ETM.Web.Common;
 using System;
 using System.Collections.Generic;
@@ -35,5 +36,22 @@ namespace ETM.Web.Controllers
 				return new InternalServerErrorResult(this);
 			}
 		}
+
+        [HttpPost]
+        public async Task<IHttpActionResult> PostSkillset(SkillSet skset)
+        {
+
+            try
+            {
+                var result = await _skillSetService.AddSkill(skset);
+                return this.JsonDataResult(result);
+            }
+            catch (Exception e)
+            {
+                //Logger.Log(LogLevel.Error, e);
+                return new InternalServerErrorResult(this);
+            }
+
+        }
 	}
 }

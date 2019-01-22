@@ -16,10 +16,13 @@ namespace ETM.Repository.Models
         public int id { get; set; }
 
         //[DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("employee_id")]
-        public int EmployeeId;
+        [Column("employee_id"), Required]
+        public int EmployeeId { get; set; }
 
-        [Column("technology_id")]
-        public int TechnologyId;
+        [Column("technology_id"), Required]
+        public int TechnologyId { get; set; }
+
+        [ForeignKey("TechnologyId")]
+        public virtual SkillSet Technology { get; set; }
     }
 }

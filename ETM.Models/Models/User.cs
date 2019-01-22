@@ -19,6 +19,7 @@ namespace ETM.Repository.Models
 		public string LastName { get; set; }
 		public string LoggedOn { get; set; }
 		public string[] Roles { get; set; }
+        public int EmpId { get; set; }
 		//public virtual ICollection<Roles> Roles { get; set; }
 	}
 }
