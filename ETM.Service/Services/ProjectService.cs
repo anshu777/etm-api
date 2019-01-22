@@ -16,6 +16,8 @@ namespace ETM.Service
 	{
 		public ProjectService() { }
         SkillSetService skillSetService = new SkillSetService();
+        EmployeeService employeeService = new EmployeeService();
+
         public async Task<ProjectDto> AddProject(ProjectDto projectDto)
 		{
             using (var _context = new DatabaseContext())
@@ -83,13 +85,14 @@ namespace ETM.Service
                     ProjectSkills projectSkills = await _context.ProjectSkills.Where(x => x.ProjectId == projectDto.id).FirstOrDefaultAsync<ProjectSkills>();
                     if (projectSkills == null) projectSkills = new ProjectSkills();
                     {
-                        projectSkills.ProjectId = project.Id;
+                        //projectSkills.ProjectId = project.Id;
                         projectSkills.PrimarySkillIds = string.Join(",", projectDto.primarySkillIds.Select(z => z.Id));
                         projectSkills.SecondarySkillIds = string.Join(",", projectDto.secondarySkillIds.Select(z => z.Id));
                     };
 
                     // TODO ProjectResource resource = new ProjectResource()
-                    _context.ProjectSkills.Add(projectSkills);
+                    if (projectSkills == null)
+                        _context.ProjectSkills.Add(projectSkills);
 
                     int y = await (_context.SaveChangesAsync());
 
@@ -186,7 +189,7 @@ namespace ETM.Service
 			{
 				using (var _context = new DatabaseContext())
 				{
-					var prjs = await _context.Project.Include(x => x.Employee).Include(x => x.Client).ToListAsync<Project>();
+					var prjs = await _context.Project.Include(x => x.Client).ToListAsync<Project>();
 					projects = (from p in prjs
 								select new ProjectDto
 								{
@@ -195,10 +198,19 @@ namespace ETM.Service
 									clientId =  p.ClientId,
 									clientName= p.Client.Name,
                                     projectManagerId = p.ProjectManagerId,
-                                    projectManager = p.Employee.Name,
+                                    //projectManager = p.Employee.Name,
 									startDate = p.StartDate,
                                     comments = p.Comments
 								}).ToList();
+
+                    EmployeeDto emp = new EmployeeDto();
+                    foreach (ProjectDto p in projects)
+                    {
+                         emp = await employeeService.GetById(p.projectManagerId);
+                        if(emp != null)
+                        p.projectManager = emp.Name;
+                        else p.projectManager = "No Manager";
+                    }
 
                     ProjectSkills projectSkills = new ProjectSkills();
                     foreach (ProjectDto pd in projects)

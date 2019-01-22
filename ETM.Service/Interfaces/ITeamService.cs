@@ -13,6 +13,7 @@ namespace ETM.Service.Interfaces
 		Task<List<TeamDto>> GetTeams();
 		Task<Team> Get(int TeamId);
 		Task<TeamDto> AddTeam(TeamDto Team);
-		Task<TeamTasksDto> AssignTasks(TeamTasksDto teamTasks);
+        Task<TeamDto> UpdateTeam(TeamDto Team);
+        Task<TeamTasksDto> AssignTasks(TeamTasksDto teamTasks);
 	}
 }

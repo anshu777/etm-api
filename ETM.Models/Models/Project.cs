@@ -15,11 +15,8 @@ namespace ETM.Repository.Models
 		[Column("name"), Required]
 		public string Name { get; set; }
 
-		[Column("project_manager_id"), Required]
+		[Column("project_manager_id")]
 		public int ProjectManagerId { get; set; }
-
-		[ForeignKey("ProjectManagerId")]
-		public virtual Employee Employee { get; set; }
 
 		[Column("client_id"), Required]
 		public int ClientId { get; set; }
