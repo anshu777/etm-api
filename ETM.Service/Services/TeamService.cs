@@ -36,7 +36,30 @@ namespace ETM.Service.Services
 			}
 		}
 
-		public async Task<TeamTasksDto> AssignTasks(TeamTasksDto teamTasks)
+        public async Task<TeamDto> UpdateTeam(TeamDto teamDto)
+        {
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    Team team = await _context.Team.Where(x => x.Id == teamDto.id).FirstOrDefaultAsync<Team>();
+                    
+                        team.Id = teamDto.id;
+                        team.Name = teamDto.name;
+                        team.ProjectId = teamDto.projectId;
+                        team.SetupDate = teamDto.setupDate;
+                    
+                    int y = await (_context.SaveChangesAsync());
+                }
+                return teamDto;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<TeamTasksDto> AssignTasks(TeamTasksDto teamTasks)
 		{
 			try
 			{

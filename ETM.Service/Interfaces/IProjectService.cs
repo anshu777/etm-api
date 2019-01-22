@@ -11,7 +11,7 @@ namespace ETM.Service.Interface
     public interface IProjectService
     {
 		Task<List<ProjectDto>> GetProjects();
-		Task<Project> Get(int projectID);
+		Task<ProjectDto> Get(int projectID);
 		Task<ProjectDto> AddProject(ProjectDto project);
 		//bool CheckProjectCodeExists(string ProjectCode);
 		//bool CheckProjectNameExists(string ProjectName);

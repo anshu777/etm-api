@@ -8,8 +8,8 @@ namespace ETM.Repository.Dto
 {
 	public class OrgChartDto
 	{
-		public string Name { get; set; }
-		public string Designation { get; set; }
-        public List<OrgChartDto> Subordinates { get; set; }
+		public string name { get; set; }
+		public string designation { get; set; }
+        public List<OrgChartDto> subordinates { get; set; }
 	}
 }

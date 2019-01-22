@@ -32,5 +32,11 @@ namespace ETM.Repository.Models
         public string Remarks { get; set; }
         [Column("date")]
         public DateTime Date { get; set; }
+        [Column("new_request")]
+        public Boolean NewRequest { get; set; }
+        [Column("years_of_experience")]
+        public int YearsOfExp { get; set; }
+        [Column("location")]
+        public String Location { get; set; }
     }
 }
