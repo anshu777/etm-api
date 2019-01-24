@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ETM.Repository.Models;
+using System;
 using System.Collections.Generic;
 
 namespace ETM.Repository.Dto
@@ -41,7 +42,8 @@ namespace ETM.Repository.Dto
         public string Email { get; set; }
         public string AltEmail { get; set; }
         public List<int> skillsId { get; set; }
-
+        public List<SkillSet>Primary { get; set; }
+        public List<SkillSet> Secondry { get; set; }
     }
 
 	public class TechnologySummaryDto

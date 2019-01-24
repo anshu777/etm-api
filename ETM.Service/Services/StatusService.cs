@@ -26,8 +26,8 @@ namespace ETM.Service.Services
                                   id = s.Id,
                                   name = s.Name,
                                   description = s.Description,
-                                  statusId = s.StatusTypeId,
-                                  status = s.StatusType.Type
+                                  statustypeId = s.StatusTypeId,
+                                  statustype = s.StatusType.Type
                               }).ToList();
                 }
                 return status;
@@ -69,14 +69,14 @@ namespace ETM.Service.Services
             {
                 using (var _context = new DatabaseContext())
                 {
-                    var statusValue = await _context.Status.Where(x => x.StatusTypeId == id).Include(x => x.StatusTypeId).ToListAsync<Status>();
+                    var statusValue = await _context.Status.Where(x => x.StatusTypeId == id).Include(x => x.StatusType).ToListAsync<Status>();
                     status = (from s in statusValue
                               select new StatusDto()
                               {
                                   id = s.Id,
                                   name = s.Name,
                                   description = s.Description,
-                                  statusId = s.StatusTypeId
+                                  statustypeId = s.StatusTypeId
                               }).ToList();
                 }
 

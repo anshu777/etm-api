@@ -12,7 +12,7 @@ namespace ETM.Repository.Dto
         public int id { get; set; }
         public string name { get; set; }
         public string description { get; set; }
-        public int statusId { get; set; }
-        public string status { get; set; }
+        public int statustypeId { get; set; }
+        public string statustype { get; set; }
     }
 }

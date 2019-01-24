@@ -35,10 +35,13 @@ namespace ETM.Repository.Models
         [Column("joining_ctc"), Required]
         public decimal JoiningCtc { get; set; }
 
-        [Column("status"), Required]
-        public int Status { get; set; }
+        [Column("status_id"), Required]
+        public int StatusId { get; set; }
 
-		[Column("project_billing_status")]
+        [ForeignKey("StatusId")]
+        public virtual Status Status  { get; set; }
+
+        [Column("project_billing_status")]
 		public int ProjectBillingStatus { get; set; }
 
 		[Column("team_id")]

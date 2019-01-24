@@ -17,5 +17,8 @@ namespace ETM.Service.Interface
         bool UpdateTimesheet();
 		Task<UserDateDto> Approve(UserDateDto userDate);
 		Task<UserDateDto> Unlock(UserDateDto userDate);
-	}
+        Task<TimesheetRequestDTO> AddRequest(TimesheetRequestDTO request);
+        Task<List<TimesheetRequestDTO>> GetRequests();
+        Task<List<TimesheetRequestDTO>> GetPendingRequests();
+    }
 }

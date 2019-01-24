@@ -62,7 +62,8 @@ namespace ETM.Web
 						identity.AddClaim(new Claim("Email", user.Email));
 						identity.AddClaim(new Claim("FirstName", user.FirstName));
 						identity.AddClaim(new Claim("LastName", user.LastName));
-						identity.AddClaim(new Claim("LoggedOn", DateTime.Now.ToString()));
+                        identity.AddClaim(new Claim("EmpId", user.EmpId.ToString()));
+                        identity.AddClaim(new Claim("LoggedOn", DateTime.Now.ToString()));
 						var userRoles = await (from u in _context.UserRoles
 											   join r in _context.Roles
 											   on u.RoleId equals r.Id
@@ -79,10 +80,14 @@ namespace ETM.Web
 						{
 							identity.AddClaim(new Claim(ClaimTypes.Role, role));
 						}
-						var additionalData = new AuthenticationProperties(new Dictionary<string, string>{
-					{
-						"role", Newtonsoft.Json.JsonConvert.SerializeObject(userRoles)
-					}
+                        var additionalData = new AuthenticationProperties(new Dictionary<string, string>{
+                    {
+                        "role", Newtonsoft.Json.JsonConvert.SerializeObject(userRoles)
+
+                    },
+                            {
+                                "empid",Newtonsoft.Json.JsonConvert.SerializeObject(user.EmpId)
+                            }
 						});
 						var token = new AuthenticationTicket(identity, additionalData);
 						context.Validated(token);

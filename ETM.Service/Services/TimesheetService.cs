@@ -206,5 +206,75 @@ namespace ETM.Service
 			}
 			return userDate;
 		}
-	}
+
+        
+        public async Task<TimesheetRequestDTO> AddRequest(TimesheetRequestDTO request)
+        {
+            try
+            {
+                var req = new TimesheetRequest()
+                {
+                    EmpId = request.Empid,
+                    Reason = request.Reason,
+                    Status = request.Status,
+                    ManagerId = request.ManagerId
+                };
+                int requestid;
+                using (var _context = new DatabaseContext())
+                {
+                    _context.TimesheetRequest.Add(req);
+                    requestid = await _context.SaveChangesAsync();
+
+                }
+                request.Id = requestid;
+                return request;
+            }
+            catch(Exception e)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<TimesheetRequestDTO>> GetRequests()
+        {
+            List<TimesheetRequestDTO> requests = null;
+
+            using (var _context = new DatabaseContext())
+            {
+                var reqs = await _context.TimesheetRequest.ToListAsync<TimesheetRequest>();
+                requests = (from r in reqs
+                            select new TimesheetRequestDTO()
+                            {
+                                Id = r.RequestId,
+                                Empid = r.EmpId,
+                                Reason = r.Reason,
+                                Status = r.Status
+                                
+                            }).ToList();
+            }
+            return requests;
+        }
+
+        public async Task<List<TimesheetRequestDTO>> GetPendingRequests()
+        {
+            List<TimesheetRequestDTO> requests = null;
+
+            using (var _context = new DatabaseContext())
+            {
+                var reqs = await _context.TimesheetRequest.Where(x => x.Status==2).ToListAsync<TimesheetRequest>();
+                requests = (from r in reqs
+                            select new TimesheetRequestDTO()
+                            {
+                                Id = r.RequestId,
+                                Empid = r.EmpId,
+                                Reason = r.Reason,
+                                Status = r.Status
+
+                            }).ToList();
+            }
+            return requests;
+        }
+        
+
+    }
 }
