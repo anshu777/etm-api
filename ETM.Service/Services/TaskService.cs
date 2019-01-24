@@ -73,6 +73,7 @@ namespace ETM.Service.Services
 							 {
 								 id = p.Id,
 								 name = p.Name,
+                                 taskType = p.TaskType,
 								 taskTypeName = "TBD",
 								 assignedTo = "TBD",
 								 createdDate = DateTime.Now

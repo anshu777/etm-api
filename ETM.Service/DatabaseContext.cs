@@ -42,8 +42,10 @@ namespace ETM.Service
 		public DbSet<EmployeeTechnology> EmployeeTechnology { get; set; }
         public DbSet<MRF> MRF { get; set; }
         public DbSet<MRFSkills> MRFSkills { get; set; }
+        public DbSet<TimesheetRequest> TimesheetRequest { get; set; }
 
-		protected override void OnModelCreating(DbModelBuilder modelBuilder)
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 

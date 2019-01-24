@@ -48,30 +48,45 @@ namespace ETM.Service.Services
                     List<OrgChartDto> TLLevel = new List<OrgChartDto>();
                     int i = 0;
                     foreach (TempDto t in teamList)
-                    {
+                    { if (i > 0) continue;
                         List<OrgChartDto> EmpLevel = new List<OrgChartDto>();
-                        foreach (Employee e in t.emplist)
+                        OrgChartDto temp1 = new OrgChartDto();
+                        OrgChartDto temp = new OrgChartDto();
+                        temp = temp1;
+                        if (t.emplist != null)
                         {
-                            OrgChartDto temp = new OrgChartDto();
-                            temp.name = e.Name;
-                            temp.designation = e.Designation.Name;
-                            temp.subordinates = new List<OrgChartDto>();
-                            if (e.DesignationId == 11)
+                            foreach (Employee e in t.emplist)
                             {
-                                orgChartdto = temp;
-                            }
+                                if (e != null)
+                                {
+                                    temp.name = e.Name;
+                                    temp.designation = e.Designation.Name;
+                                    temp.subordinates = new List<OrgChartDto>();
 
-                            else if (e.DesignationId == 4)
-                            {
-                                TLLevel.Add(temp);
-                            }
-                            else
-                            {
-                                EmpLevel.Add(temp);
-                            }
 
+                                    //List<OrgChartDto> tempList = new List<OrgChartDto>();
+
+                                    if (e.DesignationId == 11)
+                                    {
+                                        orgChartdto = temp;
+                                    }
+
+                                    else if (e.DesignationId == 4)
+                                    {
+                                        TLLevel.Add(temp);
+                                    }
+                                    else
+                                    {
+                                        EmpLevel.Add(temp);
+                                        //temp.subordinates.Add(temp);
+                                        //temp = temp.subordinates[0];
+                                    }
+                                }
+                            }
+                            //EmpLevel.Add(temp1);
+                            if(TLLevel[i]!=null)
+                            TLLevel[i++].subordinates = (EmpLevel);
                         }
-                        TLLevel[i++].subordinates = (EmpLevel);
                     }
                     orgChartdto.subordinates = TLLevel;
                 }

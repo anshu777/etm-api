@@ -70,6 +70,7 @@
     <Compile Include="Dto\TeamTasksDto.cs" />
     <Compile Include="Dto\TeamDto.cs" />
     <Compile Include="Dto\TimesheetColumn.cs" />
+    <Compile Include="Dto\TimesheetRequestDTO.cs" />
     <Compile Include="Dto\TimesheetRow.cs" />
     <Compile Include="Dto\UserDateDto.cs" />
     <Compile Include="Models\Category.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="Models\ProjectSkills.cs" />
     <Compile Include="Models\ProjectTeam.cs" />
     <Compile Include="Models\StatusType.cs" />
+    <Compile Include="Models\TimesheetRequest.cs" />
     <Compile Include="Models\UserRoles.cs" />
     <Compile Include="Models\Roles.cs" />
     <Compile Include="Models\Status.cs" />

@@ -3,12 +3,13 @@ using ETM.Web.Common;
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.Results;
 
 namespace ETM.Web.Controllers
 {
-	//
-	public class CategoryController : ApiController
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    public class CategoryController : ApiController
     {
         private ICategoryService _categoryService;
 
