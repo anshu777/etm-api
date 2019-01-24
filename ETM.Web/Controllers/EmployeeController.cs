@@ -2,6 +2,7 @@
 using ETM.Service.Interfaces;
 using ETM.Web.Common;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -13,6 +14,7 @@ namespace ETM.Web.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class EmployeeController : ApiController
     {
+       
         private IEmployeeService _employeeService;
 
         public EmployeeController(IEmployeeService employeeService)
@@ -85,6 +87,8 @@ namespace ETM.Web.Controllers
 			}
 		}
 
+
+        [HttpPost]
 		public async Task<IHttpActionResult> Post([FromBody]EmployeeDto esheet)
         {
             try
@@ -95,6 +99,21 @@ namespace ETM.Web.Controllers
             catch (Exception e)
             {
                 //Logger.Log(LogLevel.Error, e);
+                return new InternalServerErrorResult(this);
+            }
+        }
+
+        [HttpPut]
+        [Route("api/employee/put")]
+        public async Task<IHttpActionResult> Put([FromBody]EmployeeDto edto)
+        {
+            try
+            {
+                var result = await _employeeService.UpdateEmployee(edto);
+                return this.JsonDataResult(result);
+            }
+            catch(Exception e)
+            {
                 return new InternalServerErrorResult(this);
             }
         }
@@ -189,6 +208,9 @@ namespace ETM.Web.Controllers
 			}
 		}
 
-		
-	}
+        
+
+
+
+    }
 }

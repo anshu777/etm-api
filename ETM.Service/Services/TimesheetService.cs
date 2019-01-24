@@ -235,22 +235,49 @@ namespace ETM.Service
             }
         }
 
+        public async Task<TimesheetRequestDTO>UpdateRequest(TimesheetRequestDTO request)
+        {
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    TimesheetRequest tr = await _context.TimesheetRequest.Where(x => x.RequestId == request.Id).FirstOrDefaultAsync<TimesheetRequest>();
+                    {
+                        tr.Status = request.Status;
+             
+                        _context.SaveChanges();
+                    }
+                    return request;
+                }
+
+            }
+            catch(Exception e)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<TimesheetRequestDTO>> GetRequests()
         {
-            List<TimesheetRequestDTO> requests = null;
+            List<TimesheetRequestDTO> requests = new List<TimesheetRequestDTO>();
 
             using (var _context = new DatabaseContext())
             {
                 var reqs = await _context.TimesheetRequest.ToListAsync<TimesheetRequest>();
-                requests = (from r in reqs
-                            select new TimesheetRequestDTO()
-                            {
-                                Id = r.RequestId,
-                                Empid = r.EmpId,
-                                Reason = r.Reason,
-                                Status = r.Status
-                                
-                            }).ToList();
+                foreach(TimesheetRequest t in reqs)
+                {
+                    TimesheetRequestDTO tmp = new TimesheetRequestDTO();
+                    tmp.Id = t.RequestId;
+                    tmp.Empid = t.EmpId;
+                    tmp.Reason = t.Reason;
+                    tmp.Status = t.Status;
+                    tmp.ManagerId = t.ManagerId;
+                    if (t.Status == 1) { tmp.Statusvalue = "Pending"; }
+                    else if (t.Status == 2) { tmp.Statusvalue = "Approved"; }
+                    else if(t.Status == 3) { tmp.Statusvalue = "Rejected"; }
+
+                    requests.Add(tmp);
+                }
             }
             return requests;
         }

@@ -22,6 +22,7 @@ namespace ETM.Web.Controllers
 		//public TimesheetController()
 		//{
 
+
 		//}
 
 		[HttpPost]
@@ -112,6 +113,22 @@ namespace ETM.Web.Controllers
             try
             {
                 var result = await _timesheetService.GetRequests();
+                return this.JsonDataResult(result);
+            }
+            catch (Exception e)
+            {
+                //Logger.Log(LogLevel.Error, e);
+                return new InternalServerErrorResult(this);
+            }
+        }
+
+        [HttpPut]
+        [Route("api/timesheet/request/put")]
+        public async Task<IHttpActionResult> PutRequest(TimesheetRequestDTO request)
+        {
+            try
+            {
+                var result = await _timesheetService.UpdateRequest(request);
                 return this.JsonDataResult(result);
             }
             catch (Exception e)

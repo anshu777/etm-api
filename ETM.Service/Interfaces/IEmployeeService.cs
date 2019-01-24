@@ -7,6 +7,7 @@ namespace ETM.Service.Interfaces
     public interface IEmployeeService
     {
         Task<EmployeeDto> AddEmployee(EmployeeDto employee);
+        Task<EmployeeDto> UpdateEmployee(EmployeeDto edto);
         Task<List<EmployeeDto>> GetAllEmployee();
 		Task<EmployeeDto> GetById(int employeeId);
 		Task<List<EmployeeDto>> GetOptionList();
@@ -17,6 +18,7 @@ namespace ETM.Service.Interfaces
 		Task<List<TechnologySummaryDto>> GetSummaryByTechnology();
 		Task<List<EmployeeDto>> GetDetailByTechnology();
 		Task<List<OptionDto>> GetByDesignationId(int id);
+        Task<OrgChartDto> GetChart(int projectid);
 
-	}
+    }
 }

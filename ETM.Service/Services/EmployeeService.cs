@@ -9,103 +9,162 @@ using System.Threading.Tasks;
 
 namespace ETM.Service.Services
 {
-	public class EmployeeService : IEmployeeService
-	{
-		public async Task<EmployeeDto> AddEmployee(EmployeeDto employee)
-		{
-			try
-			{
-				var emp = mapDtoToEmployeeEntity(employee);
-				int empId;
-				using (var _context = new DatabaseContext())
-				{
-					_context.Employee.Add(emp);
-					empId = await _context.SaveChangesAsync();
-                    
-                    foreach(int i in employee.skillsId)
+    public class EmployeeService : IEmployeeService
+    {
+        public async Task<EmployeeDto> AddEmployee(EmployeeDto employee)
+        {
+            try
+            {
+                var emp = mapDtoToEmployeeEntity(employee);
+                int empId;
+                using (var _context = new DatabaseContext())
+                {
+                    _context.Employee.Add(emp);
+                    empId = await _context.SaveChangesAsync();
+
+                    foreach (int i in employee.skillsId)
                     {
                         EmployeeTechnology et = new EmployeeTechnology();
                         et.EmployeeId = emp.Id;
                         et.TechnologyId = i;
-                        _context.EmployeeTechnology.Add(et);
+
                         _context.SaveChanges();
 
                     }
-                    
-                    
-				}
-                
-				employee.Id = empId;
-				return employee;
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
 
-		public async Task<List<EmployeeDto>> GetOptionList()
-		{
-			List<EmployeeDto> employeeList = null;
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
-					var emps = await _context.Employee.ToListAsync<Employee>();
-					employeeList = (from e in emps
-									select new EmployeeDto()
-									{
-										Id = e.Id,
-										Name = e.Name,
-									}).ToList();
-				}
-				return employeeList;
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
-		public async Task<List<EmployeeDto>> GetAllEmployee()
-		{
-			List<EmployeeDto> employeeList = null;
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
-					var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status).ToListAsync<Employee>();
-					employeeList = (from e in emps
-									select new EmployeeDto()
-									{
-										Id = e.Id,
-										Name = e.Name,
+
+                }
+
+                employee.Id = empId;
+                return employee;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        //update employee
+
+        public async Task<EmployeeDto> UpdateEmployee(EmployeeDto edto)
+        {
+
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    Employee e = await _context.Employee.Where(x => x.Id == edto.Id).FirstOrDefaultAsync<Employee>();
+                    e = mapDtoToEmployeeEntity(edto, e);
+                    await _context.SaveChangesAsync();
+
+                    var technologies = await _context.EmployeeTechnology.Where(x => x.EmployeeId == edto.Id).ToListAsync<EmployeeTechnology>();
+                    List<int> pskillsid = new List<int>();
+                    foreach (EmployeeTechnology t in technologies)
+                    {
+                        //pskillsid.Add(t.TechnologyId);
+                        if (edto.skillsId.Exists(x => x.Equals(t.TechnologyId)))
+                        {
+                            edto.skillsId.Remove(t.TechnologyId);
+                        }
+                        else
+                        {
+                            edto.skillsId.Add(t.TechnologyId);
+                        }
+
+                    }
+                    foreach (int i in edto.skillsId)
+                    {
+                        EmployeeTechnology et = await _context.EmployeeTechnology.Where(x => (x.TechnologyId == i && x.EmployeeId == edto.Id)).FirstOrDefaultAsync<EmployeeTechnology>();
+                        if (et != null)
+                        {
+                            _context.EmployeeTechnology.Remove(et);
+
+                        }
+                        else
+                        {
+                            EmployeeTechnology ets = new EmployeeTechnology();
+                            ets.EmployeeId = edto.Id;
+                            ets.TechnologyId = i;
+
+                            _context.EmployeeTechnology.Add(ets);
+
+                        }
+                        _context.SaveChanges();
+                    }
+                }
+                return edto;
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+
+        }
+
+        public async Task<List<EmployeeDto>> GetOptionList()
+        {
+            List<EmployeeDto> employeeList = null;
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    var emps = await _context.Employee.ToListAsync<Employee>();
+                    employeeList = (from e in emps
+                                    select new EmployeeDto()
+                                    {
+                                        Id = e.Id,
+                                        Name = e.Name,
+                                    }).ToList();
+                }
+                return employeeList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<List<EmployeeDto>> GetAllEmployee()
+        {
+            List<EmployeeDto> employeeList = null;
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status).ToListAsync<Employee>();
+                    employeeList = (from e in emps
+                                    select new EmployeeDto()
+                                    {
+                                        Id = e.Id,
+                                        Name = e.Name,
                                         BSIPLid = e.BSIPLid,
                                         Designation = e.Designation.Name,
-										DateOfJoin = e.DateOfJoin,
-										CategoryId = e.CategoryId,
-										Category = e.Category.Name,
-										JoiningCtc = e.JoiningCtc,
-										ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
-										StatusName = e.Status.Name, 
-										TeamName = e.Team.Name
-									}).ToList();
-				}
-				return employeeList;
+                                        DateOfJoin = e.DateOfJoin,
+                                        CategoryId = e.CategoryId,
+                                        Category = e.Category.Name,
+                                        JoiningCtc = e.JoiningCtc,
+                                        ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
+                                        StatusName = e.Status.Name,
+                                        TeamName = e.Team.Name
+                                    }).ToList();
+                }
+                return employeeList;
 
-			}
-			catch (Exception e)
-			{
-				throw;
-			}
-		}
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
 
-		public async Task<EmployeeDto> GetById(int employeeId)
-		{
-			EmployeeDto employee = null;
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
+        public async Task<EmployeeDto> GetById(int employeeId)
+        {
+            EmployeeDto employee = new EmployeeDto();
+
+            try
+            {
+                List<int> sids = new List<int>();
+                using (var _context = new DatabaseContext())
+                {
                     List<EmployeeTechnology> ets = null;
                     var Ets = await _context.EmployeeTechnology.Where(x => x.EmployeeId == employeeId).Include(x => x.Technology).ToListAsync<EmployeeTechnology>();
 
@@ -118,7 +177,7 @@ namespace ETM.Service.Services
 
                     foreach (var e in Ets)
                     {
-                        if(e.Technology.IsPrimary==1)
+                        if (e.Technology.IsPrimary == 1)
                         {
                             primary.Add(new SkillSet
                             {
@@ -126,6 +185,7 @@ namespace ETM.Service.Services
                                 Name = e.Technology.Name,
                                 IsPrimary = e.Technology.IsPrimary
                             });
+                            sids.Add(e.TechnologyId);
                         }
                         else
                         {
@@ -135,6 +195,7 @@ namespace ETM.Service.Services
                                 Name = e.Technology.Name,
                                 IsPrimary = e.Technology.IsPrimary
                             });
+                            sids.Add(e.TechnologyId);
                         }
                     }
 
@@ -174,23 +235,24 @@ namespace ETM.Service.Services
                                     Email = e.Email,
                                     AltEmail = e.AltEmail,
                                     Primary = primary,
-                                    Secondry = secondary
-                                  
-								}).FirstOrDefault();
-				}
-				return employee;
+                                    Secondry = secondary,
+                                    skillsId = sids
 
-			}
-			catch (Exception e )
-			{
-				throw;
-			}
-		}
+                                }).FirstOrDefault();
+                }
+                return employee;
+
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
 
 
 
         private Employee mapDtoToEmployeeEntity(EmployeeDto employee)
-		{
+        {
             //int tech[]
             return new Employee()
             {
@@ -200,7 +262,7 @@ namespace ETM.Service.Services
                 DateOfJoin = employee.DateOfJoin,
                 CategoryId = employee.CategoryId,
                 JoiningCtc = employee.JoiningCtc,
-               StatusId = employee.Status,
+                StatusId = employee.Status,
                 TeamId = employee.TeamId,
                 ExperienceBeforeJoining = employee.ExperienceBeforeJoining,
                 Remarks = employee.Remarks,
@@ -215,301 +277,334 @@ namespace ETM.Service.Services
                 AltEmail = employee.AltEmail,
                 PermanentAddr = employee.PermanentAddr,
                 CorrespondenceAddr = employee.CorrespondenceAddr
-			};
-		}
-		private List<EmployeeDto> mapEmployeeEntityToDto(List<Employee> employees)
-		{
-			var empDto = new List<EmployeeDto>();
-			foreach (var e in employees)
-			{
-				var emp = new EmployeeDto()
-				{
-					Id = e.Id,
-					Name = e.Name,
-					Designation = e.Designation.Name,
-					DateOfJoin = e.DateOfJoin,
-					CategoryId = e.CategoryId,
-					Category = e.Category.Name,
-					JoiningCtc = e.JoiningCtc,
-					ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
-					StatusName = e.Status.Name 
+            };
+        }
 
-				};
-				empDto.Add(emp);
-			}
-			return empDto;
-		}
 
-		public async Task<List<EmployeeDto>> GetAllByReportingStructure()
-		{
-			List<EmployeeDto> employeeList = null;
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
-					var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status).ToListAsync<Employee>();
-					employeeList = (from e in emps
-									select new EmployeeDto()
-									{
-										Id = e.Id,
-										Name = e.Name,
-										Designation = e.Designation.Name,
-										DateOfJoin = e.DateOfJoin,
-										CategoryId = e.CategoryId,
-										Category = e.Category.Name,
-										JoiningCtc = e.JoiningCtc,
-										ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
-										StatusName = e.Status.Name,
-										TeamName = e.Team.Name
-									}).ToList();
-				}
-				return employeeList;
+        private Employee mapDtoToEmployeeEntity(EmployeeDto employee, Employee e)
+        {
+            //int tech[]
 
-			}
-			catch (Exception)
-			{
-				throw;
-			}
+            e.BSIPLid = employee.BSIPLid;
+            e.Name = employee.Name;
+            e.DesignationId = employee.DesignationId;
+            e.DateOfJoin = employee.DateOfJoin;
+            e.CategoryId = employee.CategoryId;
+            e.JoiningCtc = employee.JoiningCtc;
+            e.StatusId = employee.Status;
+            e.TeamId = employee.TeamId;
+            e.ExperienceBeforeJoining = employee.ExperienceBeforeJoining;
+            e.Remarks = employee.Remarks;
+            e.Aadhar = employee.Aadhar;
+            e.PAN = employee.PAN;
+            e.BankAccAtJoining = employee.BankAccAtJoining;
+            e.SalaryAcc = employee.SalaryAcc;
+            e.UAN = employee.UAN;
+            e.ContactNo = employee.ContactNo;
+            e.AltContactNo = employee.AltContactNo;
+            e.Email = employee.Email;
+            e.AltEmail = employee.AltEmail;
+            e.PermanentAddr = employee.PermanentAddr;
+            e.CorrespondenceAddr = employee.CorrespondenceAddr;
 
-		}
-		public async Task<List<EmployeeDto>> GetAllByRiskStatus()
-		{
-			List<EmployeeDto> employeeList = null;
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
-					var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status).ToListAsync<Employee>();
-					employeeList = (from e in emps
-									select new EmployeeDto()
-									{
-										Id = e.Id,
-										Name = e.Name,
-										Designation = e.Designation.Name,
-										DateOfJoin = e.DateOfJoin,
-										CategoryId = e.CategoryId,
-										Category = e.Category.Name,
-										JoiningCtc = e.JoiningCtc,
-										ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
-										StatusName = e.Status.Name, 
-										TeamName = e.Team.Name
-									}).ToList();
-				}
-				return employeeList;
 
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
-		public async Task<List<EmployeeDto>> GetAllBySalary()
-		{
-			List<EmployeeDto> employeeList = null;
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
-					var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Status).Include(x => x.Team).ToListAsync<Employee>();
-					employeeList = (from e in emps
-									select new EmployeeDto()
-									{
-										Id = e.Id,
-										Name = e.Name,
-										Designation = e.Designation.Name,
-										DateOfJoin = e.DateOfJoin,
-										CategoryId = e.CategoryId,
-										Category = e.Category.Name,
-										JoiningCtc = e.JoiningCtc,
-										ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
-										StatusName = e.Status.Name, 
-										TeamName = e.Team.Name
-									}).ToList();
-				}
-				return employeeList;
+            return e;
+        }
 
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
 
-		public async Task<List<EmployeeDto>> GetAllByClients()
-		{
-			List<EmployeeDto> employeeList = null;
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
-					var teams = await _context.Team.Include(x => x.Project).ToListAsync<Team>();
-					var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status).Include(x => x.Technology).ToListAsync<Employee>();
-					var employeeList1 = (from t in teams
-										 join e in emps
-										 on t.Id equals e.TeamId
-										 group e
-										  by new
-										  {
-											  t.ProjectId,
-											  t.Id,
-											  e.CategoryId,
-											  employee = e
-										  } into grouped
-										 orderby grouped.Key.ProjectId, grouped.Key.Id, grouped.Key.CategoryId
-										 select new
-										 {
-											 grouped.Key.ProjectId,
-											 grouped.Key.Id,
-											 grouped.Key.CategoryId,
-											 grouped.Key.employee
-										 }).ToList();
+        private List<EmployeeDto> mapEmployeeEntityToDto(List<Employee> employees)
+        {
+            var empDto = new List<EmployeeDto>();
+            foreach (var e in employees)
+            {
+                var emp = new EmployeeDto()
+                {
+                    Id = e.Id,
+                    Name = e.Name,
+                    Designation = e.Designation.Name,
+                    DateOfJoin = e.DateOfJoin,
+                    CategoryId = e.CategoryId,
+                    Category = e.Category.Name,
+                    JoiningCtc = e.JoiningCtc,
+                    ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
+                    StatusName = e.Status.Name
 
-					employeeList = (from e in employeeList1
-									select new EmployeeDto
-									{
-										Id = e.employee.Id,
-										Name = e.employee.Name,
-										Designation = e.employee.Designation.Name,
-										DateOfJoin = e.employee.DateOfJoin,
-										CategoryId = e.employee.CategoryId,
-										Category = e.employee.Category.Name,
-										JoiningCtc = e.employee.JoiningCtc,
-										ProjectBillingStatusName = e.employee.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
-										StatusName = e.employee.Status.Name, 
-										TeamName = e.employee.Team.Name,
-										ProjectName = e.employee.Team.Project.Name,
+                };
+                empDto.Add(emp);
+            }
+            return empDto;
+        }
+
+        public async Task<List<EmployeeDto>> GetAllByReportingStructure()
+        {
+            List<EmployeeDto> employeeList = null;
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status).ToListAsync<Employee>();
+                    employeeList = (from e in emps
+                                    select new EmployeeDto()
+                                    {
+                                        Id = e.Id,
+                                        Name = e.Name,
+                                        Designation = e.Designation.Name,
+                                        DateOfJoin = e.DateOfJoin,
+                                        CategoryId = e.CategoryId,
+                                        Category = e.Category.Name,
+                                        JoiningCtc = e.JoiningCtc,
+                                        ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
+                                        StatusName = e.Status.Name,
+                                        TeamName = e.Team.Name
+                                    }).ToList();
+                }
+                return employeeList;
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<EmployeeDto>> GetAllByRiskStatus()
+        {
+            List<EmployeeDto> employeeList = null;
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status).ToListAsync<Employee>();
+                    employeeList = (from e in emps
+                                    select new EmployeeDto()
+                                    {
+                                        Id = e.Id,
+                                        Name = e.Name,
+                                        Designation = e.Designation.Name,
+                                        DateOfJoin = e.DateOfJoin,
+                                        CategoryId = e.CategoryId,
+                                        Category = e.Category.Name,
+                                        JoiningCtc = e.JoiningCtc,
+                                        ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
+                                        StatusName = e.Status.Name,
+                                        TeamName = e.Team.Name
+                                    }).ToList();
+                }
+                return employeeList;
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<List<EmployeeDto>> GetAllBySalary()
+        {
+            List<EmployeeDto> employeeList = null;
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Status).Include(x => x.Team).ToListAsync<Employee>();
+                    employeeList = (from e in emps
+                                    select new EmployeeDto()
+                                    {
+                                        Id = e.Id,
+                                        Name = e.Name,
+                                        Designation = e.Designation.Name,
+                                        DateOfJoin = e.DateOfJoin,
+                                        CategoryId = e.CategoryId,
+                                        Category = e.Category.Name,
+                                        JoiningCtc = e.JoiningCtc,
+                                        ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
+                                        StatusName = e.Status.Name,
+                                        TeamName = e.Team.Name
+                                    }).ToList();
+                }
+                return employeeList;
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<EmployeeDto>> GetAllByClients()
+        {
+            List<EmployeeDto> employeeList = null;
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    var teams = await _context.Team.Include(x => x.Project).ToListAsync<Team>();
+                    var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status).Include(x => x.Technology).ToListAsync<Employee>();
+                    var employeeList1 = (from t in teams
+                                         join e in emps
+                                         on t.Id equals e.TeamId
+                                         group e
+                                          by new
+                                          {
+                                              t.ProjectId,
+                                              t.Id,
+                                              e.CategoryId,
+                                              employee = e
+                                          } into grouped
+                                         orderby grouped.Key.ProjectId, grouped.Key.Id, grouped.Key.CategoryId
+                                         select new
+                                         {
+                                             grouped.Key.ProjectId,
+                                             grouped.Key.Id,
+                                             grouped.Key.CategoryId,
+                                             grouped.Key.employee
+                                         }).ToList();
+
+                    employeeList = (from e in employeeList1
+                                    select new EmployeeDto
+                                    {
+                                        Id = e.employee.Id,
+                                        Name = e.employee.Name,
+                                        Designation = e.employee.Designation.Name,
+                                        DateOfJoin = e.employee.DateOfJoin,
+                                        CategoryId = e.employee.CategoryId,
+                                        Category = e.employee.Category.Name,
+                                        JoiningCtc = e.employee.JoiningCtc,
+                                        ProjectBillingStatusName = e.employee.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
+                                        StatusName = e.employee.Status.Name,
+                                        TeamName = e.employee.Team.Name,
+                                        ProjectName = e.employee.Team.Project.Name,
                                         ProjectComment = e.employee.Team.Project.Comments,
-										TotalExperience = e.employee.ExperienceBeforeJoining + Convert.ToDateTime(e.employee.DateOfJoin).Year,
-										TechnologyName = e.employee.Technology.Name,
-										Remarks = e.employee.Remarks
-									}).ToList();
-				}
-				return employeeList;
+                                        TotalExperience = e.employee.ExperienceBeforeJoining + Convert.ToDateTime(e.employee.DateOfJoin).Year,
+                                        TechnologyName = e.employee.Technology.Name,
+                                        Remarks = e.employee.Remarks
+                                    }).ToList();
+                }
+                return employeeList;
 
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
-
-
-		public async Task<List<TechnologySummaryDto>> GetSummaryByTechnology()
-		{
-			List<TechnologySummaryDto> employeeList = null;
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
-					var emps = await _context.Employee.Include(x => x.Technology).ToListAsync<Employee>();
-					employeeList = (from e in emps
-									group e
-									 by new
-									 {
-										 Technology = e.Technology.Name
-										 //employee = e
-									 } into grouped
-									orderby grouped.Key.Technology
-									let app = grouped.Where(x => x.ProjectBillingStatus == 1).Count()
-									let shd = grouped.Where(x => x.ProjectBillingStatus == 0).Count()
-									select new TechnologySummaryDto
-									{
-										Technology = grouped.Key.Technology,
-										Approved = app,
-										Shadow = shd,
-										Total = app + shd
-									}).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
 
-				}
-				return employeeList;
+        public async Task<List<TechnologySummaryDto>> GetSummaryByTechnology()
+        {
+            List<TechnologySummaryDto> employeeList = null;
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    var emps = await _context.Employee.Include(x => x.Technology).ToListAsync<Employee>();
+                    employeeList = (from e in emps
+                                    group e
+                                     by new
+                                     {
+                                         Technology = e.Technology.Name
+                                         //employee = e
+                                     } into grouped
+                                    orderby grouped.Key.Technology
+                                    let app = grouped.Where(x => x.ProjectBillingStatus == 1).Count()
+                                    let shd = grouped.Where(x => x.ProjectBillingStatus == 0).Count()
+                                    select new TechnologySummaryDto
+                                    {
+                                        Technology = grouped.Key.Technology,
+                                        Approved = app,
+                                        Shadow = shd,
+                                        Total = app + shd
+                                    }).ToList();
 
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
 
-		public async Task<List<EmployeeDto>> GetDetailByTechnology()
-		{
-			List<EmployeeDto> employeeList = null;
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
-					var teams = await _context.Team.Include(x => x.Project).ToListAsync<Team>();
-					var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Technology).ToListAsync<Employee>();
-					var employeeList1 = (from t in teams
-										 join e in emps
-										 on t.Id equals e.TeamId
-										 group e
-										  by new
-										  {
-											  t.ProjectId,
-											  e.TechnologyId,
-											  employee = e
-										  } into grouped
-										 orderby grouped.Key.ProjectId, grouped.Key.TechnologyId
-										 select new
-										 {
-											 grouped.Key.ProjectId,
-											 grouped.Key.TechnologyId,
-											 grouped.Key.employee
-										 }).ToList();
+                }
+                return employeeList;
 
-					employeeList = (from e in employeeList1
-									select new EmployeeDto
-									{
-										Id = e.employee.Id,
-										Name = e.employee.Name,
-										Designation = e.employee.Designation.Name,
-										DateOfJoin = e.employee.DateOfJoin,
-										CategoryId = e.employee.CategoryId,
-										Category = e.employee.Category.Name,
-										JoiningCtc = e.employee.JoiningCtc,
-										ProjectBillingStatusName = e.employee.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
-										StatusName = e.employee.Status.Name,
-										TeamName = e.employee.Team.Name,
-										ProjectName = e.employee.Team.Project.Name,
-										TotalExperience = e.employee.ExperienceBeforeJoining + Convert.ToDateTime(e.employee.DateOfJoin).Year,
-										TechnologyName = e.employee.Technology.Name,
-										Remarks = e.employee.Remarks
-									}).ToList();
-				}
-				return employeeList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
+        public async Task<List<EmployeeDto>> GetDetailByTechnology()
+        {
+            List<EmployeeDto> employeeList = null;
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+                    var teams = await _context.Team.Include(x => x.Project).ToListAsync<Team>();
+                    var emps = await _context.Employee.Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Technology).ToListAsync<Employee>();
+                    var employeeList1 = (from t in teams
+                                         join e in emps
+                                         on t.Id equals e.TeamId
+                                         group e
+                                          by new
+                                          {
+                                              t.ProjectId,
+                                              e.TechnologyId,
+                                              employee = e
+                                          } into grouped
+                                         orderby grouped.Key.ProjectId, grouped.Key.TechnologyId
+                                         select new
+                                         {
+                                             grouped.Key.ProjectId,
+                                             grouped.Key.TechnologyId,
+                                             grouped.Key.employee
+                                         }).ToList();
 
-		public async Task<List<OptionDto>> GetByDesignationId(int designationId)
-		{
-			List<OptionDto> empList = null;
-			try
-			{
-				using (var _context = new DatabaseContext())
-				{
-                    
+                    employeeList = (from e in employeeList1
+                                    select new EmployeeDto
+                                    {
+                                        Id = e.employee.Id,
+                                        Name = e.employee.Name,
+                                        Designation = e.employee.Designation.Name,
+                                        DateOfJoin = e.employee.DateOfJoin,
+                                        CategoryId = e.employee.CategoryId,
+                                        Category = e.employee.Category.Name,
+                                        JoiningCtc = e.employee.JoiningCtc,
+                                        ProjectBillingStatusName = e.employee.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
+                                        StatusName = e.employee.Status.Name,
+                                        TeamName = e.employee.Team.Name,
+                                        ProjectName = e.employee.Team.Project.Name,
+                                        TotalExperience = e.employee.ExperienceBeforeJoining + Convert.ToDateTime(e.employee.DateOfJoin).Year,
+                                        TechnologyName = e.employee.Technology.Name,
+                                        Remarks = e.employee.Remarks
+                                    }).ToList();
+                }
+                return employeeList;
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<OptionDto>> GetByDesignationId(int designationId)
+        {
+            List<OptionDto> empList = null;
+            try
+            {
+                using (var _context = new DatabaseContext())
+                {
+
                     var emps = await _context.Employee.Where(x => x.DesignationId == designationId).ToListAsync<Employee>();
-					empList = (from e in emps
-							   select new OptionDto()
-							   {
-								   Id = e.Id,
-								   Name = e.Name
-							   }).ToList();
-				}
-				return empList;
+                    empList = (from e in emps
+                               select new OptionDto()
+                               {
+                                   Id = e.Id,
+                                   Name = e.Name
+                               }).ToList();
+                }
+                return empList;
 
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
 
         //org chart
@@ -520,7 +615,7 @@ namespace ETM.Service.Services
             List<EmployeeDto> edto { get; set; }
         }
 
-        public async  Task<OrgChartDto> GetChart(int projectid)
+        public async Task<OrgChartDto> GetChart(int projectid)
         {
             OrgChartDto oc = new OrgChartDto();
             EmployeeDto ed = null;
@@ -531,7 +626,7 @@ namespace ETM.Service.Services
             {
                 using (var _context = new DatabaseContext())
                 {
-                    var teams = await _context.Team.Where(x => x.ProjectId==projectid).ToListAsync<Team>();
+                    var teams = await _context.Team.Where(x => x.ProjectId == projectid).ToListAsync<Team>();
                     oc.subordinates = (from t in teams
                                        select new OrgChartDto
                                        {
@@ -541,17 +636,17 @@ namespace ETM.Service.Services
                 }
 
 
-                    return oc;
+                return oc;
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw;
             }
 
 
         }
-        
+
 
     }
 }
