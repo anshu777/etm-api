@@ -10,10 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace ETM.Web.Controllers
 {
-	public class UserController : ApiController
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    public class UserController : ApiController
 	{
 		private IUserService _userService;
 		public UserController(IUserService userService)

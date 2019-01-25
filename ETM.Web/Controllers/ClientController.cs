@@ -7,12 +7,13 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.Results;
 
 namespace ETM.Web.Controllers
 {
-	
-	public class ClientController : ApiController
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    public class ClientController : ApiController
     {
 		private IClientService _clientService;
 		public ClientController(IClientService clientService)

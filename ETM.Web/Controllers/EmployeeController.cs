@@ -114,7 +114,22 @@ namespace ETM.Web.Controllers
 			}
 		}
 
-		[Route("api/employee/getallbysalary")]
+        [HttpPut]
+        [Route("api/employee/put")]
+        public async Task<IHttpActionResult> Put([FromBody]EmployeeDto edto)
+        {
+            try
+            {
+                var result = await _employeeService.UpdateEmployee(edto);
+                return this.JsonDataResult(result);
+            }
+            catch (Exception e)
+            {
+                return new InternalServerErrorResult(this);
+            }
+        }
+
+        [Route("api/employee/getallbysalary")]
 		public async Task<IHttpActionResult> GetAllBySalary()
 		{
 			try
