@@ -38,69 +38,13 @@ namespace ETM.Service.Services
 				employee.Id = empId;
 				return employee;
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				throw;
 			}
 		}
 
-        public async Task<EmployeeDto> UpdateEmployee(EmployeeDto edto)
-        {
-
-            try
-            {
-                using (var _context = new DatabaseContext())
-                {
-                    Employee e = await _context.Employee.Where(x => x.Id == edto.Id).FirstOrDefaultAsync<Employee>();
-                    e = mapDtoToEmployeeEntity(edto, e);
-                   _context.SaveChanges();
-
-                    var technologies = await _context.EmployeeTechnology.Where(x => x.EmployeeId == edto.Id).ToListAsync<EmployeeTechnology>();
-                    List<int> pskillsid = new List<int>();
-                    foreach (EmployeeTechnology t in technologies)
-                    {
-                        //pskillsid.Add(t.TechnologyId);
-                        if (edto.skillsId.Exists(x => x.Equals(t.TechnologyId)))
-                        {
-                            edto.skillsId.Remove(t.TechnologyId);
-                        }
-                        else
-                        {
-                            edto.skillsId.Add(t.TechnologyId);
-                        }
-
-                    }
-                    if(edto.skillsId != null)
-                    foreach (int i in edto.skillsId)
-                    {
-                        EmployeeTechnology et = await _context.EmployeeTechnology.Where(x => (x.TechnologyId == i && x.EmployeeId == edto.Id)).FirstOrDefaultAsync<EmployeeTechnology>();
-                        if (et != null)
-                        {
-                            _context.EmployeeTechnology.Remove(et);
-
-                        }
-                        else
-                        {
-                            EmployeeTechnology ets = new EmployeeTechnology();
-                            ets.EmployeeId = edto.Id;
-                            ets.TechnologyId = i;
-
-                            _context.EmployeeTechnology.Add(ets);
-
-                        }
-                        _context.SaveChanges();
-                    }
-                }
-                return edto;
-            }
-            catch (Exception e)
-            {
-                throw;
-            }
-
-        }
-
-        public async Task<List<EmployeeDto>> GetOptionList()
+		public async Task<List<EmployeeDto>> GetOptionList()
 		{
 			List<EmployeeDto> employeeList = null;
 			try
@@ -195,9 +139,7 @@ namespace ETM.Service.Services
                     }
 
 
-                    var emps = await _context.Employee.Where(x => x.Id == employeeId)
-                        .Include(x => x.Designation.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status)
-                        .ToListAsync<Employee>();
+                    var emps = await _context.Employee.Where(x => x.Id == employeeId).Include(x => x.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status).ToListAsync<Employee>();
                     employee = (from e in emps
                                 select new EmployeeDto()
                                 {
@@ -207,8 +149,8 @@ namespace ETM.Service.Services
                                     DesignationId = e.DesignationId,
                                     Designation = e.Designation.Name,
                                     DateOfJoin = e.DateOfJoin,
-                                    CategoryId = e.Designation.CategoryId,
-                                    Category = e.Designation.Category.Name,
+                                    CategoryId = e.CategoryId,
+                                    Category = e.Category.Name,
                                     JoiningCtc = e.JoiningCtc,
                                     ProjectBillingStatusName = e.ProjectBillingStatus == 1 ? "Approved" : "Shadow",
                                     Status = e.StatusId,
@@ -275,38 +217,7 @@ namespace ETM.Service.Services
                 CorrespondenceAddr = employee.CorrespondenceAddr
 			};
 		}
-
-        private Employee mapDtoToEmployeeEntity(EmployeeDto employee, Employee e)
-        {
-            //int tech[]
-
-            e.BSIPLid = employee.BSIPLid;
-            e.Name = employee.Name;
-            e.DesignationId = employee.DesignationId;
-            e.DateOfJoin = employee.DateOfJoin;
-            e.CategoryId = employee.CategoryId;
-            e.JoiningCtc = employee.JoiningCtc;
-            e.StatusId = employee.Status;
-            e.TeamId = employee.TeamId;
-            e.ExperienceBeforeJoining = employee.ExperienceBeforeJoining;
-            e.Remarks = employee.Remarks;
-            e.Aadhar = employee.Aadhar;
-            e.PAN = employee.PAN;
-            e.BankAccAtJoining = employee.BankAccAtJoining;
-            e.SalaryAcc = employee.SalaryAcc;
-            e.UAN = employee.UAN;
-            e.ContactNo = employee.ContactNo;
-            e.AltContactNo = employee.AltContactNo;
-            e.Email = employee.Email;
-            e.AltEmail = employee.AltEmail;
-            e.PermanentAddr = employee.PermanentAddr;
-            e.CorrespondenceAddr = employee.CorrespondenceAddr;
-            e.ReportingMgr = employee.ReportingMgr;
-
-            return e;
-        }
-
-        private List<EmployeeDto> mapEmployeeEntityToDto(List<Employee> employees)
+		private List<EmployeeDto> mapEmployeeEntityToDto(List<Employee> employees)
 		{
 			var empDto = new List<EmployeeDto>();
 			foreach (var e in employees)

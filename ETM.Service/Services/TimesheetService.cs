@@ -95,7 +95,7 @@ namespace ETM.Service
 			DateTime toDate = userDate.Date.AddDays(6);
 			using (var context = new DatabaseContext())
 			{
-				teamId = context.Employee.Where(x => x.Id == userDate.UserId).Select(x => x.TeamId).FirstOrDefault<int>();
+				teamId = 1;// context.Employee.Where(x => x.Id == userDate.UserId).Select(x => x.TeamId).FirstOrDefault<int>();
 				var taskTeams = await context.TaskTeam.Where(x => x.TeamId == teamId).Include(x => x.Task).ToListAsync<TaskTeam>();
 
 				var taskGroup = (from t in taskTeams

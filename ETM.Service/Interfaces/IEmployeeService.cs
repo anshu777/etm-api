@@ -9,8 +9,7 @@ namespace ETM.Service.Interfaces
         Task<EmployeeDto> AddEmployee(EmployeeDto employee);
         Task<List<EmployeeDto>> GetAllEmployee();
 		Task<EmployeeDto> GetById(int employeeId);
-        Task<EmployeeDto> UpdateEmployee(EmployeeDto edto);
-        Task<List<EmployeeDto>> GetOptionList();
+		Task<List<EmployeeDto>> GetOptionList();
 		Task<List<EmployeeDto>> GetAllByReportingStructure();
 		Task<List<EmployeeDto>> GetAllByRiskStatus();
 		Task<List<EmployeeDto>> GetAllBySalary();

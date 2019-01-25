@@ -198,6 +198,7 @@ namespace ETM.Service
 									clientId =  p.ClientId,
 									clientName= p.Client.Name,
                                     projectManagerId = p.ProjectManagerId,
+                                    //projectManager = p.Employee.Name,
 									startDate = p.StartDate,
                                     comments = p.Comments
 								}).ToList();
