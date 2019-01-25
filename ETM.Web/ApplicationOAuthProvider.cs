@@ -81,14 +81,16 @@ namespace ETM.Web
 							identity.AddClaim(new Claim(ClaimTypes.Role, role));
 						}
                         var additionalData = new AuthenticationProperties(new Dictionary<string, string>{
-                    {
-                        "role", Newtonsoft.Json.JsonConvert.SerializeObject(userRoles)
-
-                    },
-                            {
-                                "empid",Newtonsoft.Json.JsonConvert.SerializeObject(user.EmpId)
-                            }
-						});
+                        {
+                            "role", Newtonsoft.Json.JsonConvert.SerializeObject(userRoles)
+                        },
+                        {
+                            "empid",Newtonsoft.Json.JsonConvert.SerializeObject(user.EmpId)
+                        },
+                        {
+                            "teamid",Newtonsoft.Json.JsonConvert.SerializeObject(1)
+                        }
+                        });
 						var token = new AuthenticationTicket(identity, additionalData);
 						context.Validated(token);
 					}
