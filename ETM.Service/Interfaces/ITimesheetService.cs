@@ -11,13 +11,14 @@ namespace ETM.Service.Interface
     public interface ITimesheetService
     {
         Task<EmployeeTimesheet> AddTimeSheet(EmployeeTimesheet esheet);
-		//IQueryable<TimeSheetMasterView> ShowTimeSheet(string sortColumn, string sortColumnDir, string Search, int UserID);
-		Task<EmployeeTimesheet> GetTimesheetByUserID(UserDateDto userDate);
+        //IQueryable<TimeSheetMasterView> ShowTimeSheet(string sortColumn, string sortColumnDir, string Search, int UserID);
+        Task<EmployeeTimesheet> GetTimesheetByUserID(UserDateDto userDate);
         int DeleteTimesheetByID(long TimesheetID, long UserID);
         bool UpdateTimesheet();
-		Task<UserDateDto> Approve(UserDateDto userDate);
-		Task<UserDateDto> Unlock(UserDateDto userDate);
+        Task<UserDateDto> Approve(UserDateDto userDate);
+        Task<UserDateDto> Unlock(UserDateDto userDate);
         Task<TimesheetRequestDTO> AddRequest(TimesheetRequestDTO request);
+        Task<TimesheetRequestDTO> UpdateRequest(TimesheetRequestDTO request);
         Task<List<TimesheetRequestDTO>> GetRequests();
         Task<List<TimesheetRequestDTO>> GetPendingRequests();
     }

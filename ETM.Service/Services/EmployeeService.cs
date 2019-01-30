@@ -51,11 +51,11 @@ namespace ETM.Service.Services
             {
                 using (var _context = new DatabaseContext())
                 {
-                    Employee e = await _context.Employee.Where(x => x.Id == edto.Id).FirstOrDefaultAsync<Employee>();
+                    Employee e = await _context.Employee.Where(x => x.BSIPLid == edto.BSIPLid).FirstOrDefaultAsync<Employee>();
                     e = mapDtoToEmployeeEntity(edto, e);
                    _context.SaveChanges();
 
-                    var technologies = await _context.EmployeeTechnology.Where(x => x.EmployeeId == edto.Id).ToListAsync<EmployeeTechnology>();
+                    var technologies = await _context.EmployeeTechnology.Where(x => x.EmployeeId == edto.BSIPLid).ToListAsync<EmployeeTechnology>();
                     List<int> pskillsid = new List<int>();
                     foreach (EmployeeTechnology t in technologies)
                     {
@@ -73,7 +73,7 @@ namespace ETM.Service.Services
                     if(edto.skillsId != null)
                     foreach (int i in edto.skillsId)
                     {
-                        EmployeeTechnology et = await _context.EmployeeTechnology.Where(x => (x.TechnologyId == i && x.EmployeeId == edto.Id)).FirstOrDefaultAsync<EmployeeTechnology>();
+                        EmployeeTechnology et = await _context.EmployeeTechnology.Where(x => (x.TechnologyId == i && x.EmployeeId == edto.BSIPLid)).FirstOrDefaultAsync<EmployeeTechnology>();
                         if (et != null)
                         {
                             _context.EmployeeTechnology.Remove(et);
@@ -82,7 +82,7 @@ namespace ETM.Service.Services
                         else
                         {
                             EmployeeTechnology ets = new EmployeeTechnology();
-                            ets.EmployeeId = edto.Id;
+                            ets.EmployeeId = edto.BSIPLid;
                             ets.TechnologyId = i;
 
                             _context.EmployeeTechnology.Add(ets);
@@ -195,7 +195,7 @@ namespace ETM.Service.Services
                     }
 
 
-                    var emps = await _context.Employee.Where(x => x.Id == employeeId)
+                    var emps = await _context.Employee.Where(x => x.BSIPLid == employeeId)
                         .Include(x => x.Designation.Category).Include(x => x.Designation).Include(x => x.Team).Include(x => x.Status)
                         .ToListAsync<Employee>();
                     employee = (from e in emps
@@ -232,8 +232,8 @@ namespace ETM.Service.Services
                                     Email = e.Email,
                                     AltEmail = e.AltEmail,
                                     Primary = primary,
-                                    Secondry = secondary
-                                  
+                                    Secondry = secondary,
+                                    skillsId = new List<int>()
 								}).FirstOrDefault();
 				}
 				return employee;
